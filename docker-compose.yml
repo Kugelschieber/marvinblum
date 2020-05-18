@@ -15,7 +15,7 @@ services:
       - "--certificatesresolvers.tls-resolver.acme.httpchallenge=true"
       - "--certificatesresolvers.tls-resolver.acme.httpchallenge.entrypoint=web"
       #      - "--certificatesresolvers.tls-resolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
-      - "--certificatesresolvers.tls-resolver.acme.email=info@sts.wtf"
+      - "--certificatesresolvers.tls-resolver.acme.email=marvin@marvinblum.de"
       - "--certificatesresolvers.tls-resolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
@@ -23,24 +23,20 @@ services:
     #      - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /root/stswiki/letsencrypt:/letsencrypt
-  stswiki:
-    image: kugel/stswiki
-    container_name: stswiki
+      - /root/marvinblum/letsencrypt:/letsencrypt
+  marvinblum:
+    image: kugel/marvinblum
+    container_name: marvinblum
     restart: always
     depends_on:
       - traefik
-    environment:
-      - STS_WIKI_CLIENT_ID=VDVCTHBt5AcM4rRLUJR5
-      - STS_WIKI_CLIENT_SECRET=KltFFSoXaZX7wysxIGdzvxW2KpArfar7G9EAzattw3CUgp1Y7UBkRQlnpCGKTwC0
-      - STS_WIKI_ORGANIZATION=sts
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.stswiki.entrypoints=web"
-      - "traefik.http.routers.stswiki.rule=Host(`wiki.sts.wtf`)"
-      - "traefik.http.routers.stswiki.middlewares=http-redirect"
-      - "traefik.http.routers.stswiki-secure.entrypoints=websecure"
-      - "traefik.http.routers.stswiki-secure.rule=Host(`wiki.sts.wtf`)"
-      - "traefik.http.routers.stswiki-secure.tls.certresolver=tls-resolver"
+      - "traefik.http.routers.marvinblum.entrypoints=web"
+      - "traefik.http.routers.marvinblum.rule=Host(`marvinblum.de`)"
+      - "traefik.http.routers.marvinblum.middlewares=http-redirect"
+      - "traefik.http.routers.marvinblum-secure.entrypoints=websecure"
+      - "traefik.http.routers.marvinblum-secure.rule=Host(`marvinblum.de`)"
+      - "traefik.http.routers.marvinblum-secure.tls.certresolver=tls-resolver"
       - "traefik.http.middlewares.http-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.http-redirect.redirectscheme.permanent=true"
