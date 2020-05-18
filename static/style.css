@@ -43,8 +43,9 @@ body {
     display: flex;
 }
 
-.menu input {
+.menu .button {
     margin-right: 10px;
+
 }
 
 section {
