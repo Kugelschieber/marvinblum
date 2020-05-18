@@ -36,14 +36,14 @@ body {
     max-height: 100px;
     border-radius: 100%;
     display: block;
-    margin: 0 40px 0 0;
+    margin-left: 20px;
 }
 
 .menu {
     display: flex;
 }
 
-.menu button {
+.menu input {
     margin-right: 10px;
 }
 
@@ -53,4 +53,23 @@ section {
 
 p {
     line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+    body {
+        padding: 40px 20px 80px 20px;
+    }
+
+    .title h1 {
+        font-size: 36px;
+    }
+
+    .title h2 {
+        font-size: 24px;
+    }
+
+    .title img {
+        max-width: 72px;
+        max-height: 72px;
+    }
 }
