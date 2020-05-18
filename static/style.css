@@ -1,0 +1,56 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    max-width: 700px;
+    padding: 100px 20px 400px 20px;
+    margin: 0 auto;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.title div {
+    flex-grow: 1;
+}
+
+.title h1 {
+    font-size: 48px;
+    margin-bottom: 10px;
+    line-height: 1;
+}
+
+.title h2 {
+    font-weight: normal;
+    margin-top: 0;
+    line-height: 1;
+}
+
+.title img {
+    max-width: 100px;
+    max-height: 100px;
+    border-radius: 100%;
+    display: block;
+    margin: 0 40px 0 0;
+}
+
+.menu {
+    display: flex;
+}
+
+.menu button {
+    margin-right: 10px;
+}
+
+section {
+    margin: 80px 0;
+}
+
+p {
+    line-height: 1.5;
+}
