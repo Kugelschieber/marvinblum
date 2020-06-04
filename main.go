@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/NYTimes/gziphandler"
 	"github.com/caddyserver/certmagic"
 	"github.com/emvi/logbuch"
 	"github.com/gorilla/mux"
@@ -42,7 +43,7 @@ func logEnvConfig() {
 
 func setupRouter() *mux.Router {
 	router := mux.NewRouter()
-	router.PathPrefix(staticDirPrefix).Handler(http.StripPrefix(staticDirPrefix, http.FileServer(http.Dir(staticDir))))
+	router.PathPrefix(staticDirPrefix).Handler(http.StripPrefix(staticDirPrefix, gziphandler.GzipHandler(http.FileServer(http.Dir(staticDir)))))
 	return router
 }
 
