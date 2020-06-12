@@ -93,6 +93,7 @@ func serveTemplate(name string) http.HandlerFunc {
 func setupRouter() *mux.Router {
 	router := mux.NewRouter()
 	router.PathPrefix(staticDirPrefix).Handler(http.StripPrefix(staticDirPrefix, gziphandler.GzipHandler(http.FileServer(http.Dir(staticDir)))))
+	router.Handle("/legal", serveTemplate("legal.html"))
 	router.Handle("/blog", serveTemplate("blog.html"))
 	router.Handle("/", serveTemplate("about.html"))
 	router.NotFoundHandler = serveTemplate("notfound.html")
