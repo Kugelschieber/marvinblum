@@ -6,5 +6,6 @@
 export MB_LOGLEVEL=debug
 export MB_ALLOWED_ORIGINS=*
 export MB_HOST=localhost:8080
+export MB_HOT_RELOAD=true
 
 go run main.go

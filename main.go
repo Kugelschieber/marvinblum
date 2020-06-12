@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"github.com/NYTimes/gziphandler"
 	"github.com/caddyserver/certmagic"
 	"github.com/emvi/logbuch"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
+	"html/template"
 	"net/http"
 	"os"
 	"strings"
@@ -13,9 +15,16 @@ import (
 
 const (
 	staticDir       = "static"
-	staticDirPrefix = "/"
+	staticDirPrefix = "/static/"
+	templateDir     = "template/*"
 	logTimeFormat   = "2006-01-02_15:04:05"
 	envPrefix       = "MB_"
+)
+
+var (
+	tpl       *template.Template
+	tplCache  = make(map[string][]byte)
+	hotReload bool
 )
 
 func configureLog() {
@@ -41,9 +50,52 @@ func logEnvConfig() {
 	}
 }
 
+func loadTemplate() {
+	logbuch.Debug("Loading templates")
+	var err error
+	tpl, err = template.ParseGlob(templateDir)
+
+	if err != nil {
+		logbuch.Fatal("Error loading template", logbuch.Fields{"err": err})
+	}
+
+	hotReload = os.Getenv("MB_HOT_RELOAD") == "true"
+	logbuch.Debug("Templates loaded", logbuch.Fields{"hot_reload": hotReload})
+}
+
+func renderTemplate(name string) {
+	logbuch.Debug("Rendering template", logbuch.Fields{"name": name})
+	var buffer bytes.Buffer
+
+	if err := tpl.ExecuteTemplate(&buffer, name, nil); err != nil {
+		logbuch.Fatal("Error executing template", logbuch.Fields{"err": err, "name": name})
+	}
+
+	tplCache[name] = buffer.Bytes()
+}
+
+func serveTemplate(name string) http.HandlerFunc {
+	// render once so we have it in cache
+	renderTemplate(name)
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		if hotReload {
+			loadTemplate()
+			renderTemplate(name)
+		}
+
+		if _, err := w.Write(tplCache[name]); err != nil {
+			logbuch.Error("Error returning page to client", logbuch.Fields{"err": err, "name": name})
+		}
+	}
+}
+
 func setupRouter() *mux.Router {
 	router := mux.NewRouter()
 	router.PathPrefix(staticDirPrefix).Handler(http.StripPrefix(staticDirPrefix, gziphandler.GzipHandler(http.FileServer(http.Dir(staticDir)))))
+	router.Handle("/blog", serveTemplate("blog.html"))
+	router.Handle("/", serveTemplate("about.html"))
+	router.NotFoundHandler = serveTemplate("notfound.html")
 	return router
 }
 
@@ -83,6 +135,7 @@ func start(handler http.Handler) {
 func main() {
 	configureLog()
 	logEnvConfig()
+	loadTemplate()
 	router := setupRouter()
 	corsConfig := configureCors(router)
 	start(corsConfig)
