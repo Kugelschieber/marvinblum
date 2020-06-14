@@ -2,7 +2,18 @@
 {{template "menu.html"}}
 
 <section>
-    <p>TODO Blog</p>
+    <h1>Blog</h1>
+    {{range $year, $articles := .Articles}}
+        <h2>{{$year}}</h2>
+
+        {{range $article := $articles}}
+            <p>
+                <a href="/blog/{{slug $article.LatestArticleContent.Title}}-{{$article.Id}}">{{$article.LatestArticleContent.Title}}</a>
+            </p>
+        {{end}}
+    {{else}}
+        <p>There are no blog posts yet...</p>
+    {{end}}
 </section>
 
 {{template "end.html"}}

@@ -19,9 +19,13 @@
 </section>
 <section>
     <h2>latest blog posts</h2>
-    <p>
-        TODO
-    </p>
+    {{range $article := .Articles}}
+        <p>
+            <a href="/blog/{{slug $article.LatestArticleContent.Title}}-{{$article.Id}}">{{$article.LatestArticleContent.Title}}</a>
+        </p>
+    {{else}}
+        <p>There are no blog posts yet...</p>
+    {{end}}
     <p>
         <a href="/blog">View all</a>
     </p>
