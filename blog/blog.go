@@ -21,6 +21,8 @@ var (
 	blog Blog
 )
 
+// TODO cache files
+// TODO fix mentions
 type Blog struct {
 	client       *emvi.Client
 	articles     map[string]emvi.Article // id -> article
