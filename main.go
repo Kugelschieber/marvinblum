@@ -9,9 +9,11 @@ import (
 	"github.com/emvi/logbuch"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
+	"html/template"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 )
 
 const (
@@ -19,6 +21,10 @@ const (
 	staticDirPrefix = "/static/"
 	logTimeFormat   = "2006-01-02_15:04:05"
 	envPrefix       = "MB_"
+)
+
+var (
+	blogInstance *blog.Blog
 )
 
 func configureLog() {
@@ -49,7 +55,7 @@ func serveAbout() http.HandlerFunc {
 		data := struct {
 			Articles []emvi.Article
 		}{
-			blog.GetLatestArticles(),
+			blogInstance.GetLatestArticles(),
 		}
 
 		if err := tpl.Get().ExecuteTemplate(w, "about.html", data); err != nil {
@@ -59,11 +65,60 @@ func serveAbout() http.HandlerFunc {
 	}
 }
 
+func serveBlogPage() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data := struct {
+			Articles map[int][]emvi.Article
+		}{
+			blogInstance.GetArticles(),
+		}
+
+		if err := tpl.Get().ExecuteTemplate(w, "blog.html", data); err != nil {
+			logbuch.Error("Error executing blog template", logbuch.Fields{"err": err})
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	}
+}
+
+func serveBlogArticle() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		slug := strings.Split(vars["slug"], "-")
+
+		if len(slug) == 0 {
+			http.Redirect(w, r, "/notfound", http.StatusFound)
+			return
+		}
+
+		article := blogInstance.GetArticle(slug[len(slug)-1])
+
+		if len(article.Id) == 0 {
+			http.Redirect(w, r, "/notfound", http.StatusFound)
+			return
+		}
+
+		data := struct {
+			Title     string
+			Content   template.HTML
+			Published time.Time
+		}{
+			article.LatestArticleContent.Title,
+			template.HTML(article.LatestArticleContent.Content),
+			article.Published,
+		}
+
+		if err := tpl.Get().ExecuteTemplate(w, "article.html", data); err != nil {
+			logbuch.Error("Error executing blog article template", logbuch.Fields{"err": err})
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	}
+}
+
 func setupRouter() *mux.Router {
 	router := mux.NewRouter()
 	router.PathPrefix(staticDirPrefix).Handler(http.StripPrefix(staticDirPrefix, gziphandler.GzipHandler(http.FileServer(http.Dir(staticDir)))))
-	router.Handle("/blog/{slug}", blog.ServeBlogArticle())
-	router.Handle("/blog", blog.ServeBlogPage())
+	router.Handle("/blog/{slug}", serveBlogArticle())
+	router.Handle("/blog", serveBlogPage())
 	router.Handle("/legal", tpl.ServeTemplate("legal.html"))
 	router.Handle("/", serveAbout())
 	router.NotFoundHandler = tpl.ServeTemplate("notfound.html")
@@ -107,7 +162,7 @@ func main() {
 	configureLog()
 	logEnvConfig()
 	tpl.LoadTemplate()
-	blog.InitBlog()
+	blogInstance = blog.NewBlog()
 	router := setupRouter()
 	corsConfig := configureCors(router)
 	start(corsConfig)

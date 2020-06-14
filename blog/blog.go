@@ -2,17 +2,13 @@ package blog
 
 import (
 	"fmt"
-	"github.com/Kugelschieber/marvinblum.de/tpl"
 	emvi "github.com/emvi/api-go"
 	"github.com/emvi/logbuch"
-	"github.com/gorilla/mux"
-	"html/template"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
-	"strings"
 	"time"
 )
 
@@ -23,7 +19,6 @@ const (
 )
 
 var (
-	blog               Blog
 	linkRegex          = regexp.MustCompile(`(?iU)href="/read/([^"]+)"`)
 	attachmentRegex    = regexp.MustCompile(`(?iU)(href|src)="([^"]+)/api/v1/content/([^"]+)"`)
 	attachmentURLRegex = regexp.MustCompile(`(?iU)(href|src)="([^"]+/api/v1/content/)([^"]+)"`)
@@ -36,19 +31,48 @@ type Blog struct {
 	nextUpdate   time.Time
 }
 
-func InitBlog() {
+func NewBlog() *Blog {
 	logbuch.Info("Initializing blog")
-	blog.client = emvi.NewClient(os.Getenv("MB_EMVI_CLIENT_ID"),
+	b := new(Blog)
+	b.client = emvi.NewClient(os.Getenv("MB_EMVI_CLIENT_ID"),
 		os.Getenv("MB_EMVI_CLIENT_SECRET"),
 		os.Getenv("MB_EMVI_ORGA"),
 		nil)
-	blog.nextUpdate = time.Now().Add(blogCacheTime)
+	b.nextUpdate = time.Now().Add(blogCacheTime)
 
 	if err := os.MkdirAll(blogFileCache, 0755); err != nil {
 		logbuch.Error("Error creating blog file cache directory", logbuch.Fields{"err": err})
 	}
 
-	blog.loadArticles()
+	b.loadArticles()
+	return b
+}
+
+func (blog *Blog) GetArticle(id string) emvi.Article {
+	blog.refreshIfRequired()
+	return blog.articles[id]
+}
+
+func (blog *Blog) GetArticles() map[int][]emvi.Article {
+	blog.refreshIfRequired()
+	return blog.articlesYear
+}
+
+func (blog *Blog) GetLatestArticles() []emvi.Article {
+	blog.refreshIfRequired()
+	articles := make([]emvi.Article, 0, 3)
+	i := 0
+
+	for _, v := range blog.articles {
+		articles = append(articles, v)
+		i++
+
+		if i > maxLatestArticles {
+			break
+		}
+	}
+
+	return articles
 }
 
 func (blog *Blog) loadArticles() {
@@ -152,88 +176,8 @@ func (blog *Blog) setArticles(articles map[string]emvi.Article) {
 	}
 }
 
-func (blog *Blog) getArticle(id string) emvi.Article {
-	blog.refreshIfRequired()
-	return blog.articles[id]
-}
-
-func (blog *Blog) getArticles() map[int][]emvi.Article {
-	blog.refreshIfRequired()
-	return blog.articlesYear
-}
-
-func (blog *Blog) getLatestArticles() []emvi.Article {
-	blog.refreshIfRequired()
-	articles := make([]emvi.Article, 0, 3)
-	i := 0
-
-	for _, v := range blog.articles {
-		articles = append(articles, v)
-		i++
-
-		if i > maxLatestArticles {
-			break
-		}
-	}
-
-	return articles
-}
-
 func (blog *Blog) refreshIfRequired() {
 	if blog.nextUpdate.Before(time.Now()) {
 		blog.loadArticles()
-	}
-}
-
-func GetLatestArticles() []emvi.Article {
-	return blog.getLatestArticles()
-}
-
-func ServeBlogPage() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		data := struct {
-			Articles map[int][]emvi.Article
-		}{
-			blog.getArticles(),
-		}
-
-		if err := tpl.Get().ExecuteTemplate(w, "blog.html", data); err != nil {
-			logbuch.Error("Error executing blog template", logbuch.Fields{"err": err})
-			w.WriteHeader(http.StatusInternalServerError)
-		}
-	}
-}
-
-func ServeBlogArticle() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		slug := strings.Split(vars["slug"], "-")
-
-		if len(slug) == 0 {
-			http.Redirect(w, r, "/notfound", http.StatusFound)
-			return
-		}
-
-		article := blog.getArticle(slug[len(slug)-1])
-
-		if len(article.Id) == 0 {
-			http.Redirect(w, r, "/notfound", http.StatusFound)
-			return
-		}
-
-		data := struct {
-			Title     string
-			Content   template.HTML
-			Published time.Time
-		}{
-			article.LatestArticleContent.Title,
-			template.HTML(article.LatestArticleContent.Content),
-			article.Published,
-		}
-
-		if err := tpl.Get().ExecuteTemplate(w, "article.html", data); err != nil {
-			logbuch.Error("Error executing blog article template", logbuch.Fields{"err": err})
-			w.WriteHeader(http.StatusInternalServerError)
-		}
 	}
 }
