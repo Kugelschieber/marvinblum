@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	blogCacheTime     = time.Hour
+	blogCacheTime     = time.Minute * 15
 	blogFileCache     = "static/blog"
 	maxLatestArticles = 3
 )
@@ -115,17 +115,27 @@ func (blog *Blog) loadArticles() {
 }
 
 func (blog *Blog) loadArticle(article emvi.Article) *emvi.ArticleContent {
-	_, content, _, err := blog.client.GetArticle(article.Id, article.LatestArticleContent.LanguageId, 0)
+	existingArticle := blog.articles[article.Id]
+	var content *emvi.ArticleContent
 
-	if err != nil {
-		logbuch.Error("Error loading article", logbuch.Fields{"err": err, "id": article.Id})
-		return nil
+	if len(existingArticle.Id) == 0 || !existingArticle.ModTime.Equal(article.ModTime) {
+		var err error
+		_, content, _, err = blog.client.GetArticle(article.Id, article.LatestArticleContent.LanguageId, 0)
+
+		if err != nil {
+			logbuch.Error("Error loading article", logbuch.Fields{"err": err, "id": article.Id})
+			return nil
+		}
+
+		blog.downloadAttachments(article.Id, content.Content)
+		content.Content = linkRegex.ReplaceAllString(content.Content, `href="/blog/$1"`)
+		content.Content = attachmentRegex.ReplaceAllString(content.Content, fmt.Sprintf(`$1="/static/blog/%s/$3"`, article.Id))
+		logbuch.Debug("Article loaded", logbuch.Fields{"id": article.Id})
+	} else {
+		content = existingArticle.LatestArticleContent
+		logbuch.Debug("Article up to date, skipping refreshing cache", logbuch.Fields{"id": article.Id})
 	}
 
-	blog.downloadAttachments(article.Id, content.Content)
-	content.Content = linkRegex.ReplaceAllString(content.Content, `href="/blog/$1"`)
-	content.Content = attachmentRegex.ReplaceAllString(content.Content, fmt.Sprintf(`$1="/static/blog/%s/$3"`, article.Id))
-	logbuch.Debug("Article loaded", logbuch.Fields{"id": article.Id})
 	return content
 }
 
