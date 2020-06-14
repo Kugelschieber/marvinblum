@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"net/http"
 	"os"
+	"time"
 )
 
 const (
@@ -21,6 +22,9 @@ var (
 
 var funcMap = template.FuncMap{
 	"slug": slug.Make,
+	"format": func(t time.Time, layout string) string {
+		return t.Format(layout)
+	},
 }
 
 func LoadTemplate() {

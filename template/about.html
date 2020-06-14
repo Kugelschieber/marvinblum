@@ -22,6 +22,7 @@
     {{range $article := .Articles}}
         <p>
             <a href="/blog/{{slug $article.LatestArticleContent.Title}}-{{$article.Id}}">{{$article.LatestArticleContent.Title}}</a>
+            <small>{{format $article.Published "2. January 2006"}}</small>
         </p>
     {{else}}
         <p>There are no blog posts yet...</p>
