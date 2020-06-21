@@ -31,6 +31,7 @@ const (
 
 var (
 	tracker      *pirsch.Tracker
+	tplCache     *tpl.Cache
 	blogInstance *blog.Blog
 )
 
@@ -88,32 +89,29 @@ func setupTracker() {
 func serveAbout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tracker.Hit(r)
-		data := struct {
+		tplCache.Render(w, "about.html", struct {
 			Articles []emvi.Article
 		}{
 			blogInstance.GetLatestArticles(),
-		}
+		})
+	}
+}
 
-		if err := tpl.Get().ExecuteTemplate(w, "about.html", data); err != nil {
-			logbuch.Error("Error executing blog template", logbuch.Fields{"err": err})
-			w.WriteHeader(http.StatusInternalServerError)
-		}
+func serveLegal() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		tracker.Hit(r)
+		tplCache.Render(w, "legal.html", nil)
 	}
 }
 
 func serveBlogPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tracker.Hit(r)
-		data := struct {
+		tplCache.Render(w, "blog.html", struct {
 			Articles map[int][]emvi.Article
 		}{
 			blogInstance.GetArticles(),
-		}
-
-		if err := tpl.Get().ExecuteTemplate(w, "blog.html", data); err != nil {
-			logbuch.Error("Error executing blog template", logbuch.Fields{"err": err})
-			w.WriteHeader(http.StatusInternalServerError)
-		}
+		})
 	}
 }
 
@@ -135,7 +133,7 @@ func serveBlogArticle() http.HandlerFunc {
 			return
 		}
 
-		data := struct {
+		tplCache.Render(w, "article.html", struct {
 			Title     string
 			Content   template.HTML
 			Published time.Time
@@ -143,12 +141,13 @@ func serveBlogArticle() http.HandlerFunc {
 			article.LatestArticleContent.Title,
 			template.HTML(article.LatestArticleContent.Content),
 			article.Published,
-		}
+		})
+	}
+}
 
-		if err := tpl.Get().ExecuteTemplate(w, "article.html", data); err != nil {
-			logbuch.Error("Error executing blog article template", logbuch.Fields{"err": err})
-			w.WriteHeader(http.StatusInternalServerError)
-		}
+func serveNotFound() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		tplCache.Render(w, "notfound.html", nil)
 	}
 }
 
@@ -157,9 +156,9 @@ func setupRouter() *mux.Router {
 	router.PathPrefix(staticDirPrefix).Handler(http.StripPrefix(staticDirPrefix, gziphandler.GzipHandler(http.FileServer(http.Dir(staticDir)))))
 	router.Handle("/blog/{slug}", serveBlogArticle())
 	router.Handle("/blog", serveBlogPage())
-	router.Handle("/legal", tpl.ServeTemplate("legal.html", tracker))
+	router.Handle("/legal", serveLegal())
 	router.Handle("/", serveAbout())
-	router.NotFoundHandler = tpl.ServeTemplate("notfound.html", tracker)
+	router.NotFoundHandler = serveNotFound()
 	return router
 }
 
@@ -199,9 +198,9 @@ func start(handler http.Handler) {
 func main() {
 	configureLog()
 	logEnvConfig()
-	tpl.LoadTemplate()
 	setupTracker()
-	blogInstance = blog.NewBlog()
+	tplCache = tpl.NewCache()
+	blogInstance = blog.NewBlog(tplCache)
 	router := setupRouter()
 	corsConfig := configureCors(router)
 	start(corsConfig)
