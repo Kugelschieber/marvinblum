@@ -34,6 +34,10 @@ services:
       - MB_EMVI_CLIENT_ID="3fBBn144yvSF9R3dPC8l"
       - MB_EMVI_CLIENT_SECRET="dw3FeshelTgdf1Gj13J7uF5FfdPDi40sQvvwqeFVKTTyIDuCdlAHhRY72csFL6yg"
       - MB_EMVI_ORGA=marvin
+      - MB_DB_HOST=postgres
+      - MB_DB_USER=
+      - MB_DB_PASSWORD=
+      - MB_DB_SCHEMA=
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.marvinblum.entrypoints=web"

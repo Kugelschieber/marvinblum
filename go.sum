@@ -77,6 +77,8 @@ github.com/emvi/api-go v0.0.0-20191210194347-0a945446f6a8 h1:DZJfRdvwlybLvHkyeN8
 github.com/emvi/api-go v0.0.0-20191210194347-0a945446f6a8/go.mod h1:g9RdDC3s5ebCknAHQQ5PjoM2vRFSyyGoOUX3QkDKU+o=
 github.com/emvi/logbuch v0.0.0-20200214115750-61de9b6d5934 h1:+G10WRp72llJuaW89QezNK8QU9SsOmd5Ja7ocrrUaI0=
 github.com/emvi/logbuch v0.0.0-20200214115750-61de9b6d5934/go.mod h1:J2Wgbr3BuSc1JO+D2MBVh6q3WPVSK5GzktwWz8pvkKw=
+github.com/emvi/pirsch v0.0.0-20200621133222-e65f2459e5a3 h1:Du+BjUUrCH7XptKBgsyTeLCPFOuYNArPfja53XFwzl4=
+github.com/emvi/pirsch v0.0.0-20200621133222-e65f2459e5a3/go.mod h1:+YmBbltJ3feZz9L/QQyqwywltYvQKBfzrGD51TPKl5g=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
 github.com/exoscale/egoscale v0.18.1/go.mod h1:Z7OOdzzTOz1Q1PjQXumlz9Wn/CddH0zSYdCF3rnBKXE=
@@ -169,6 +171,8 @@ github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
 github.com/labbsr0x/bindman-dns-webhook v1.0.2/go.mod h1:p6b+VCXIR8NYKpDr8/dg1HKfQoRHCdcsROXKvmoehKA=
 github.com/labbsr0x/goh v1.0.1/go.mod h1:8K2UhVoaWXcCU7Lxoa2omWnC8gyW8px7/lmO61c027w=
+github.com/lib/pq v1.7.0 h1:h93mCPfUSkaul3Ka/VG8uZdmW1uMHDGxzu0NWHuJmHY=
+github.com/lib/pq v1.7.0/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
 github.com/linode/linodego v0.10.0/go.mod h1:cziNP7pbvE3mXIPneHj0oRY8L1WtGEIKlZ8LANE4eXA=
 github.com/liquidweb/liquidweb-go v1.6.0/go.mod h1:UDcVnAMDkZxpw4Y7NOHkqoeiGacVLEIG/i5J9cyixzQ=
 github.com/mattn/go-isatty v0.0.3/go.mod h1:M+lRXTBqGeGNdLjl/ufCoiOlB5xdOkqRJdNxMWT7Zi4=

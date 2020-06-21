@@ -3,6 +3,7 @@ package tpl
 import (
 	"bytes"
 	"github.com/emvi/logbuch"
+	"github.com/emvi/pirsch"
 	"github.com/gosimple/slug"
 	"html/template"
 	"net/http"
@@ -55,11 +56,13 @@ func Get() *template.Template {
 	return tpl
 }
 
-func ServeTemplate(name string) http.HandlerFunc {
+func ServeTemplate(name string, tracker *pirsch.Tracker) http.HandlerFunc {
 	// render once so we have it in cache
 	renderTemplate(name)
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		tracker.Hit(r)
+
 		if hotReload {
 			LoadTemplate()
 			renderTemplate(name)
