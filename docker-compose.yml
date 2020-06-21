@@ -5,11 +5,14 @@ services:
     image: "traefik:v2.2"
     container_name: traefik
     restart: always
+    networks:
+      - traefik-internal
     command:
       #      - "--log.level=DEBUG"
       #      - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=marvinblum_traefik-internal"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.tls-resolver.acme.httpchallenge=true"
@@ -24,15 +27,23 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /root/marvinblum/letsencrypt:/letsencrypt
+  #    labels:
+  #      - "traefik.enable=true"
+  #      - "traefik.port=8080"
+  #      - "traefik.http.routers.traefik.entrypoints=web"
+  #      - "traefik.http.routers.traefik.service=api@internal"
   marvinblum:
     image: kugel/marvinblum
     container_name: marvinblum
     restart: always
     depends_on:
       - traefik
+    networks:
+      - postgres_db-internal
+      - traefik-internal
     environment:
-      - MB_EMVI_CLIENT_ID="3fBBn144yvSF9R3dPC8l"
-      - MB_EMVI_CLIENT_SECRET="dw3FeshelTgdf1Gj13J7uF5FfdPDi40sQvvwqeFVKTTyIDuCdlAHhRY72csFL6yg"
+      - MB_EMVI_CLIENT_ID=3fBBn144yvSF9R3dPC8l
+      - MB_EMVI_CLIENT_SECRET=dw3FeshelTgdf1Gj13J7uF5FfdPDi40sQvvwqeFVKTTyIDuCdlAHhRY72csFL6yg
       - MB_EMVI_ORGA=marvin
       - MB_DB_HOST=postgres
       - MB_DB_USER=
@@ -40,6 +51,7 @@ services:
       - MB_DB_SCHEMA=
     labels:
       - "traefik.enable=true"
+      - "traefik.port=8888"
       - "traefik.http.routers.marvinblum.entrypoints=web"
       - "traefik.http.routers.marvinblum.rule=Host(`marvinblum.de`)"
       - "traefik.http.routers.marvinblum.middlewares=http-redirect"
@@ -48,3 +60,9 @@ services:
       - "traefik.http.routers.marvinblum-secure.tls.certresolver=tls-resolver"
       - "traefik.http.middlewares.http-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.http-redirect.redirectscheme.permanent=true"
+
+networks:
+  traefik-internal:
+    driver: bridge
+  postgres_db-internal:
+    external: true
