@@ -83,7 +83,7 @@ func setupTracker() {
 		logbuch.Fatal("Error pinging database", logbuch.Fields{"err": err})
 	}
 
-	tracker = pirsch.NewTracker(pirsch.NewPostgresStore(db))
+	tracker = pirsch.NewTracker(pirsch.NewPostgresStore(db), nil)
 }
 
 func serveAbout() http.HandlerFunc {
