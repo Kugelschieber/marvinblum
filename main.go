@@ -83,7 +83,26 @@ func setupTracker() {
 		logbuch.Fatal("Error pinging database", logbuch.Fields{"err": err})
 	}
 
-	tracker = pirsch.NewTracker(pirsch.NewPostgresStore(db), nil)
+	store := pirsch.NewPostgresStore(db)
+	tracker = pirsch.NewTracker(store, nil)
+	processor := pirsch.NewProcessor(store)
+	processTrackingData(processor)
+	pirsch.RunAtMidnight(func() {
+		processTrackingData(processor)
+	})
+}
+
+func processTrackingData(processor *pirsch.Processor) {
+	logbuch.Info("Processing tracking data...")
+
+	defer func() {
+		if err := recover(); err != nil {
+			logbuch.Error("Error processing tracking data", logbuch.Fields{"err": err})
+		}
+	}()
+
+	processor.Process()
+	logbuch.Info("Done processing tracking data")
 }
 
 func serveAbout() http.HandlerFunc {
