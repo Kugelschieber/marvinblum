@@ -2,6 +2,7 @@ package blog
 
 import (
 	"fmt"
+	"github.com/Kugelschieber/marvinblum.de/tpl"
 	emvi "github.com/emvi/api-go"
 	"github.com/emvi/logbuch"
 	"io/ioutil"
@@ -9,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sync"
 	"time"
 )
 
@@ -29,11 +31,13 @@ type Blog struct {
 	articles     map[string]emvi.Article // id -> article
 	articlesYear map[int][]emvi.Article  // year -> articles
 	nextUpdate   time.Time
+	cache        *tpl.Cache
+	m            sync.Mutex
 }
 
-func NewBlog() *Blog {
+func NewBlog(cache *tpl.Cache) *Blog {
 	logbuch.Info("Initializing blog")
-	b := new(Blog)
+	b := &Blog{cache: cache}
 	b.client = emvi.NewClient(os.Getenv("MB_EMVI_CLIENT_ID"),
 		os.Getenv("MB_EMVI_CLIENT_SECRET"),
 		os.Getenv("MB_EMVI_ORGA"),
@@ -76,6 +80,8 @@ func (blog *Blog) GetLatestArticles() []emvi.Article {
 }
 
 func (blog *Blog) loadArticles() {
+	blog.m.Lock()
+	defer blog.m.Unlock()
 	logbuch.Info("Refreshing blog articles...")
 	articles, offset, count := make(map[string]emvi.Article), 0, 1
 	var err error
@@ -188,6 +194,7 @@ func (blog *Blog) setArticles(articles map[string]emvi.Article) {
 
 func (blog *Blog) refreshIfRequired() {
 	if blog.nextUpdate.Before(time.Now()) {
+		blog.cache.Clear()
 		blog.loadArticles()
 	}
 }

@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"net/http"
 	"os"
+	"sync"
 	"time"
 )
 
@@ -14,59 +15,87 @@ const (
 	templateDir = "template/*"
 )
 
-var (
+type Cache struct {
 	tpl       *template.Template
-	tplCache  = make(map[string][]byte)
+	cache     map[string][]byte
 	hotReload bool
-)
-
-var funcMap = template.FuncMap{
-	"slug": slug.Make,
-	"format": func(t time.Time, layout string) string {
-		return t.Format(layout)
-	},
+	m         sync.RWMutex
 }
 
-func LoadTemplate() {
+func NewCache() *Cache {
+	cache := &Cache{
+		cache:     make(map[string][]byte),
+		hotReload: os.Getenv("MB_HOT_RELOAD") == "true",
+	}
+	logbuch.Debug("Template cache hot reload", logbuch.Fields{"hot_reload": cache.hotReload})
+	cache.load()
+	return cache
+}
+
+func (cache *Cache) load() {
 	logbuch.Debug("Loading templates")
+	funcMap := template.FuncMap{
+		"slug": slug.Make,
+		"format": func(t time.Time, layout string) string {
+			return t.Format(layout)
+		},
+	}
 	var err error
-	tpl, err = template.New("").Funcs(funcMap).ParseGlob(templateDir)
+	cache.tpl, err = template.New("").Funcs(funcMap).ParseGlob(templateDir)
 
 	if err != nil {
 		logbuch.Fatal("Error loading template", logbuch.Fields{"err": err})
 	}
 
-	hotReload = os.Getenv("MB_HOT_RELOAD") == "true"
-	logbuch.Debug("Templates loaded", logbuch.Fields{"hot_reload": hotReload})
+	logbuch.Debug("Templates loaded", logbuch.Fields{"hot_reload": cache.hotReload})
 }
 
-func renderTemplate(name string) {
-	logbuch.Debug("Rendering template", logbuch.Fields{"name": name})
-	var buffer bytes.Buffer
+func (cache *Cache) Render(w http.ResponseWriter, name string, data interface{}) {
+	cache.m.RLock()
 
-	if err := tpl.ExecuteTemplate(&buffer, name, nil); err != nil {
-		logbuch.Fatal("Error executing template", logbuch.Fields{"err": err, "name": name})
-	}
+	if cache.cache[name] == nil || cache.hotReload {
+		cache.m.RUnlock()
+		cache.m.Lock()
+		defer cache.m.Unlock()
+		logbuch.Debug("Rendering template", logbuch.Fields{"name": name})
 
-	tplCache[name] = buffer.Bytes()
-}
-
-func Get() *template.Template {
-	return tpl
-}
-
-func ServeTemplate(name string) http.HandlerFunc {
-	// render once so we have it in cache
-	renderTemplate(name)
-
-	return func(w http.ResponseWriter, r *http.Request) {
-		if hotReload {
-			LoadTemplate()
-			renderTemplate(name)
+		if cache.hotReload {
+			logbuch.Debug("Reloading templates")
+			cache.load()
 		}
 
-		if _, err := w.Write(tplCache[name]); err != nil {
-			logbuch.Error("Error returning page to client", logbuch.Fields{"err": err, "name": name})
+		var buffer bytes.Buffer
+
+		if err := cache.tpl.ExecuteTemplate(&buffer, name, data); err != nil {
+			logbuch.Error("Error executing template", logbuch.Fields{"err": err, "name": name})
+			w.WriteHeader(http.StatusInternalServerError)
 		}
+
+		cache.cache[name] = buffer.Bytes()
+	} else {
+		cache.m.RUnlock()
 	}
+
+	if _, err := w.Write(cache.cache[name]); err != nil {
+		logbuch.Error("Error sending response to client", logbuch.Fields{"err": err, "template": name})
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
+
+func (cache *Cache) RenderWithoutCache(w http.ResponseWriter, name string, data interface{}) {
+	if cache.hotReload {
+		logbuch.Debug("Reloading templates")
+		cache.load()
+	}
+
+	if err := cache.tpl.ExecuteTemplate(w, name, data); err != nil {
+		logbuch.Error("Error executing template", logbuch.Fields{"err": err, "name": name})
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
+
+func (cache *Cache) Clear() {
+	cache.m.Lock()
+	defer cache.m.Unlock()
+	cache.cache = make(map[string][]byte)
 }

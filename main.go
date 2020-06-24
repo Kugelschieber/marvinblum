@@ -1,17 +1,22 @@
 package main
 
 import (
+	"context"
 	"github.com/Kugelschieber/marvinblum.de/blog"
 	"github.com/Kugelschieber/marvinblum.de/tpl"
+	"github.com/Kugelschieber/marvinblum.de/tracking"
 	"github.com/NYTimes/gziphandler"
-	"github.com/caddyserver/certmagic"
 	emvi "github.com/emvi/api-go"
 	"github.com/emvi/logbuch"
+	"github.com/emvi/pirsch"
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 	"github.com/rs/cors"
 	"html/template"
 	"net/http"
 	"os"
+	"os/signal"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -21,9 +26,12 @@ const (
 	staticDirPrefix = "/static/"
 	logTimeFormat   = "2006-01-02_15:04:05"
 	envPrefix       = "MB_"
+	shutdownTimeout = time.Second * 30
 )
 
 var (
+	tracker      *pirsch.Tracker
+	tplCache     *tpl.Cache
 	blogInstance *blog.Blog
 )
 
@@ -52,36 +60,36 @@ func logEnvConfig() {
 
 func serveAbout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		data := struct {
+		tracker.Hit(r)
+		tplCache.Render(w, "about.html", struct {
 			Articles []emvi.Article
 		}{
 			blogInstance.GetLatestArticles(),
-		}
+		})
+	}
+}
 
-		if err := tpl.Get().ExecuteTemplate(w, "about.html", data); err != nil {
-			logbuch.Error("Error executing blog template", logbuch.Fields{"err": err})
-			w.WriteHeader(http.StatusInternalServerError)
-		}
+func serveLegal() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		tracker.Hit(r)
+		tplCache.Render(w, "legal.html", nil)
 	}
 }
 
 func serveBlogPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		data := struct {
+		tracker.Hit(r)
+		tplCache.Render(w, "blog.html", struct {
 			Articles map[int][]emvi.Article
 		}{
 			blogInstance.GetArticles(),
-		}
-
-		if err := tpl.Get().ExecuteTemplate(w, "blog.html", data); err != nil {
-			logbuch.Error("Error executing blog template", logbuch.Fields{"err": err})
-			w.WriteHeader(http.StatusInternalServerError)
-		}
+		})
 	}
 }
 
 func serveBlogArticle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		tracker.Hit(r)
 		vars := mux.Vars(r)
 		slug := strings.Split(vars["slug"], "-")
 
@@ -97,7 +105,7 @@ func serveBlogArticle() http.HandlerFunc {
 			return
 		}
 
-		data := struct {
+		tplCache.Render(w, "article.html", struct {
 			Title     string
 			Content   template.HTML
 			Published time.Time
@@ -105,12 +113,38 @@ func serveBlogArticle() http.HandlerFunc {
 			article.LatestArticleContent.Title,
 			template.HTML(article.LatestArticleContent.Content),
 			article.Published,
+		})
+	}
+}
+
+func serveTracking() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		start, _ := strconv.Atoi(r.URL.Query().Get("start"))
+
+		if start > 365 {
+			start = 365
+		} else if start < 7 {
+			start = 7
 		}
 
-		if err := tpl.Get().ExecuteTemplate(w, "article.html", data); err != nil {
-			logbuch.Error("Error executing blog article template", logbuch.Fields{"err": err})
-			w.WriteHeader(http.StatusInternalServerError)
-		}
+		totalVisitorsLabels, totalVisitorsDps := tracking.GetTotalVisitors(start)
+		tplCache.RenderWithoutCache(w, "tracking.html", struct {
+			Start               int
+			TotalVisitorsLabels template.JS
+			TotalVisitorsDps    template.JS
+			PageVisits          []tracking.PageVisits
+		}{
+			start,
+			totalVisitorsLabels,
+			totalVisitorsDps,
+			tracking.GetPageVisits(start),
+		})
+	}
+}
+
+func serveNotFound() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		tplCache.Render(w, "notfound.html", nil)
 	}
 }
 
@@ -119,9 +153,10 @@ func setupRouter() *mux.Router {
 	router.PathPrefix(staticDirPrefix).Handler(http.StripPrefix(staticDirPrefix, gziphandler.GzipHandler(http.FileServer(http.Dir(staticDir)))))
 	router.Handle("/blog/{slug}", serveBlogArticle())
 	router.Handle("/blog", serveBlogPage())
-	router.Handle("/legal", tpl.ServeTemplate("legal.html"))
+	router.Handle("/legal", serveLegal())
+	router.Handle("/tracking", serveTracking())
 	router.Handle("/", serveAbout())
-	router.NotFoundHandler = tpl.ServeTemplate("notfound.html")
+	router.NotFoundHandler = serveNotFound()
 	return router
 }
 
@@ -141,28 +176,36 @@ func configureCors(router *mux.Router) http.Handler {
 
 func start(handler http.Handler) {
 	logbuch.Info("Starting server...")
+	var server http.Server
+	server.Handler = handler
+	server.Addr = os.Getenv("MB_HOST")
 
-	if strings.ToLower(os.Getenv("MB_TLS")) == "true" {
-		logbuch.Info("TLS enabled")
-		certmagic.DefaultACME.Agreed = true
-		certmagic.DefaultACME.Email = os.Getenv("MB_TLS_EMAIL")
-		certmagic.DefaultACME.CA = certmagic.LetsEncryptProductionCA
+	go func() {
+		sigint := make(chan os.Signal)
+		signal.Notify(sigint, os.Interrupt)
+		<-sigint
+		logbuch.Info("Shutting down server...")
+		tracker.Stop()
+		ctx, _ := context.WithTimeout(context.Background(), shutdownTimeout)
 
-		if err := certmagic.HTTPS(strings.Split(os.Getenv("MB_DOMAIN"), ","), handler); err != nil {
-			logbuch.Fatal("Error starting server", logbuch.Fields{"err": err})
+		if err := server.Shutdown(ctx); err != nil {
+			logbuch.Fatal("Error shutting down server gracefully", logbuch.Fields{"err": err})
 		}
-	} else {
-		if err := http.ListenAndServe(os.Getenv("MB_HOST"), handler); err != nil {
-			logbuch.Fatal("Error starting server", logbuch.Fields{"err": err})
-		}
+	}()
+
+	if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		logbuch.Fatal("Error starting server", logbuch.Fields{"err": err})
 	}
+
+	logbuch.Info("Server shut down")
 }
 
 func main() {
 	configureLog()
 	logEnvConfig()
-	tpl.LoadTemplate()
-	blogInstance = blog.NewBlog()
+	tracker = tracking.NewTracker()
+	tplCache = tpl.NewCache()
+	blogInstance = blog.NewBlog(tplCache)
 	router := setupRouter()
 	corsConfig := configureCors(router)
 	start(corsConfig)

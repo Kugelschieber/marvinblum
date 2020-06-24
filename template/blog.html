@@ -3,7 +3,9 @@
 
 <section>
     <h1>Blog</h1>
-    {{range $year, $articles := .Articles}}
+</section>
+{{range $year, $articles := .Articles}}
+    <section>
         <h2>{{$year}}</h2>
 
         {{range $article := $articles}}
@@ -12,9 +14,11 @@
                 <small>{{format $article.Published "2. January 2006"}}</small>
             </p>
         {{end}}
-    {{else}}
+    </section>
+{{else}}
+    <section>
         <p>There are no blog posts yet...</p>
-    {{end}}
-</section>
+    </section>
+{{end}}
 
 {{template "end.html"}}
