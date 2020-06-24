@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/emvi/logbuch"
 	"github.com/emvi/pirsch"
+	"github.com/jmoiron/sqlx"
 	"os"
 	"strconv"
 	"time"
@@ -13,6 +14,9 @@ import (
 const (
 	connectionString = `host=%s port=%s user=%s password=%s dbname=%s sslmode=%s sslcert=%s sslkey=%s sslrootcert=%s connectTimeout=%s timezone=%s`
 )
+
+var db *sqlx.DB
+var store pirsch.Store
 
 func NewTracker() *pirsch.Tracker {
 	logbuch.Info("Connecting to database...")
@@ -29,26 +33,26 @@ func NewTracker() *pirsch.Tracker {
 	timezone := zone + strconv.Itoa(-offset/3600)
 	logbuch.Info("Setting time zone", logbuch.Fields{"timezone": timezone})
 	connectionStr := fmt.Sprintf(connectionString, host, port, user, password, schema, sslMode, sslCert, sslKey, sslRootCert, "30", timezone)
-	db, err := sql.Open("postgres", connectionStr)
+	conn, err := sql.Open("postgres", connectionStr)
 
 	if err != nil {
 		logbuch.Fatal("Error connecting to database", logbuch.Fields{"err": err})
 		return nil
 	}
 
-	if err := db.Ping(); err != nil {
+	if err := conn.Ping(); err != nil {
 		logbuch.Fatal("Error pinging database", logbuch.Fields{"err": err})
 		return nil
 	}
 
-	store := pirsch.NewPostgresStore(db)
+	db = sqlx.NewDb(conn, "postgres")
+	store = pirsch.NewPostgresStore(conn)
 	tracker := pirsch.NewTracker(store, nil)
 	processor := pirsch.NewProcessor(store)
 	processTrackingData(processor)
 	pirsch.RunAtMidnight(func() {
 		processTrackingData(processor)
 	})
-
 	return tracker
 }
 

@@ -27,6 +27,7 @@ func NewCache() *Cache {
 		cache:     make(map[string][]byte),
 		hotReload: os.Getenv("MB_HOT_RELOAD") == "true",
 	}
+	logbuch.Debug("Template cache hot reload", logbuch.Fields{"hot_reload": cache.hotReload})
 	cache.load()
 	return cache
 }
@@ -57,6 +58,12 @@ func (cache *Cache) Render(w http.ResponseWriter, name string, data interface{})
 		cache.m.Lock()
 		defer cache.m.Unlock()
 		logbuch.Debug("Rendering template", logbuch.Fields{"name": name})
+
+		if cache.hotReload {
+			logbuch.Debug("Reloading templates")
+			cache.load()
+		}
+
 		var buffer bytes.Buffer
 
 		if err := cache.tpl.ExecuteTemplate(&buffer, name, data); err != nil {
@@ -71,6 +78,18 @@ func (cache *Cache) Render(w http.ResponseWriter, name string, data interface{})
 
 	if _, err := w.Write(cache.cache[name]); err != nil {
 		logbuch.Error("Error sending response to client", logbuch.Fields{"err": err, "template": name})
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
+
+func (cache *Cache) RenderWithoutCache(w http.ResponseWriter, name string, data interface{}) {
+	if cache.hotReload {
+		logbuch.Debug("Reloading templates")
+		cache.load()
+	}
+
+	if err := cache.tpl.ExecuteTemplate(w, name, data); err != nil {
+		logbuch.Error("Error executing template", logbuch.Fields{"err": err, "name": name})
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }

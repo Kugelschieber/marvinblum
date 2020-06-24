@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -116,6 +117,31 @@ func serveBlogArticle() http.HandlerFunc {
 	}
 }
 
+func serveTracking() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		start, _ := strconv.Atoi(r.URL.Query().Get("start"))
+
+		if start > 365 {
+			start = 365
+		} else if start < 7 {
+			start = 7
+		}
+
+		totalVisitorsLabels, totalVisitorsDps := tracking.GetTotalVisitors(start)
+		tplCache.RenderWithoutCache(w, "tracking.html", struct {
+			Start               int
+			TotalVisitorsLabels template.JS
+			TotalVisitorsDps    template.JS
+			PageVisits          []tracking.PageVisits
+		}{
+			start,
+			totalVisitorsLabels,
+			totalVisitorsDps,
+			tracking.GetPageVisits(start),
+		})
+	}
+}
+
 func serveNotFound() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tplCache.Render(w, "notfound.html", nil)
@@ -128,6 +154,7 @@ func setupRouter() *mux.Router {
 	router.Handle("/blog/{slug}", serveBlogArticle())
 	router.Handle("/blog", serveBlogPage())
 	router.Handle("/legal", serveLegal())
+	router.Handle("/tracking", serveTracking())
 	router.Handle("/", serveAbout())
 	router.NotFoundHandler = serveNotFound()
 	return router

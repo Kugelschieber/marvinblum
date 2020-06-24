@@ -1,0 +1,71 @@
+{{template "head.html"}}
+{{template "menu.html"}}
+
+<section>
+    <h1>Tracking</h1>
+    <p>
+        This page shows tracking statistics for my website using <a href="https://github.com/emvi/pirsch" target="_blank">Pirsch</a> and <a href="https://www.chartjs.org/" target="_blank">Chart.Js</a>. The data shows unique visitors.
+    </p>
+    <p>
+        <a href="/tracking?start=7" class="button {{if eq .Start 7}}filled{{end}}">Week</a>
+        <a href="/tracking?start=30" class="button {{if eq .Start 30}}filled{{end}}">Month</a>
+        <a href="/tracking?start=90" class="button {{if eq .Start 90}}filled{{end}}">Quarter</a>
+        <a href="/tracking?start=182" class="button {{if eq .Start 182}}filled{{end}}">Half Year</a>
+        <a href="/tracking?start=365" class="button {{if eq .Start 365}}filled{{end}}">Year</a>
+    </p>
+</section>
+<section>
+    <h2>Total Visitors</h2>
+    <canvas id="totalVisitors" class="tracking"></canvas>
+</section>
+<section>
+    <h2>Pages Visits</h2>
+</section>
+
+{{range $i, $data := .PageVisits}}
+    <section>
+        <h3>{{$data.Path}}</h3>
+        <canvas id="pageVisits{{$i}}" class="tracking"></canvas>
+    </section>
+{{end}}
+
+<!-- TODO -->
+<!--<section>
+    <h2>Languages</h2>
+</section>
+<section>
+    <h2>Visitors Per Hour</h2>
+</section>-->
+
+<script type="text/javascript" src="/static/js/Chart-v2.9.3.bundle.min.js"></script>
+<script type="text/javascript">
+    new Chart(document.getElementById('totalVisitors').getContext('2d'), {
+        type: "line",
+        data: {
+            labels: [{{.TotalVisitorsLabels}}],
+            datasets: [{
+                backgroundColor: "rgba(0, 0, 0, 0.05)",
+                borderColor: "#000",
+                label: "Total Visitors",
+                data: [{{.TotalVisitorsDps}}]
+            }]
+        }
+    });
+
+    {{range $i, $data := .PageVisits}}
+        new Chart(document.getElementById('pageVisits{{$i}}').getContext('2d'), {
+            type: "line",
+            data: {
+                labels: [{{$data.Labels}}],
+                datasets: [{
+                    backgroundColor: "rgba(0, 0, 0, 0.05)",
+                    borderColor: "#000",
+                    label: "Page Visits",
+                    data: [{{$data.Data}}]
+                }]
+            }
+        });
+    {{end}}
+</script>
+
+{{template "end.html"}}

@@ -11,7 +11,7 @@ require (
 	github.com/emvi/pirsch v0.0.0-20200624123353-86381b017755
 	github.com/gorilla/mux v1.7.4
 	github.com/gosimple/slug v1.9.0
-	github.com/jmoiron/sqlx v1.2.0 // indirect
+	github.com/jmoiron/sqlx v1.2.0
 	github.com/klauspost/cpuid v1.3.0 // indirect
 	github.com/lib/pq v1.7.0
 	github.com/miekg/dns v1.1.29 // indirect
