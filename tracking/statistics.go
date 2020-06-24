@@ -52,8 +52,7 @@ func GetPageVisits(start int) []PageVisits {
 	query := `SELECT "date" "day",
 		CASE WHEN "visitors_per_page".visitors IS NULL THEN 0 ELSE "visitors_per_page".visitors END
 		FROM (SELECT * FROM generate_series(date($1), date(now() - INTERVAL '1 day'), interval '1 day') "date") AS date_series
-		LEFT JOIN "visitors_per_page" ON date("visitors_per_page"."day") = date("date")
-		WHERE "visitors_per_page" IS NULL OR "visitors_per_page"."path" = $2
+		LEFT JOIN "visitors_per_page" ON date("visitors_per_page"."day") = date("date") AND "visitors_per_page"."path" = $2
 		ORDER BY "date" ASC, length("visitors_per_page"."path") ASC`
 	startTime := today()
 	startTime = startTime.Add(-time.Hour * 24 * time.Duration(start-1))
@@ -65,6 +64,7 @@ func GetPageVisits(start int) []PageVisits {
 		return nil
 	}
 
+	// TODO add visitors for today
 	pageVisits := make([]PageVisits, len(paths))
 
 	for i, path := range paths {
