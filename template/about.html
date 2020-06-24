@@ -11,14 +11,14 @@
 {{template "menu.html"}}
 
 <section>
-    <h2>who am I?</h2>
+    <h2>Who Am I?</h2>
     <p>
         I'm a full stack software engineer from Germany, open source and Linux enthusiast and co-founder of <a href="https://emvi.com/" target="_blank">Emvi</a>.
         In love with Go, but fluent in a lot of programming languages.
     </p>
 </section>
 <section>
-    <h2>latest blog posts</h2>
+    <h2>Latest Blog Posts</h2>
     {{range $article := .Articles}}
         <p>
             <a href="/blog/{{slug $article.LatestArticleContent.Title}}-{{$article.Id}}">{{$article.LatestArticleContent.Title}}</a>
@@ -32,10 +32,13 @@
     </p>
 </section>
 <section>
-    <h2>projects</h2>
+    <h2>Projects</h2>
     <ul>
         <li>
             <a href="https://emvi.com/" target="_blank">Emvi</a> a note taking, collaboration and knowledge management tool for personal use and teams of any size
+        </li>
+        <li>
+            <a href="https://github.com/emvi/pirsch" target="_blank">pirsch</a> a server side, no-cookie and privacy focused tracking library for Golang
         </li>
         <li>
             <a href="https://github.com/emvi/logbuch" target="_blank">logbuch</a> a simple Golang logging library
@@ -52,7 +55,7 @@
     </ul>
 </section>
 <section>
-    <h2>skills</h2>
+    <h2>Skills</h2>
     <ul>
         <li>Go (Golang)</li>
         <li>JavaScript (Vue, Node)</li>
@@ -66,7 +69,7 @@
     </ul>
 </section>
 <section>
-    <h2>work</h2>
+    <h2>Work</h2>
     <ul>
         <li>
             <a href="https://emvi.com/" target="_blank">Emvi</a> co-founder of a note taking, collaboration and knowledge management SaaS startup

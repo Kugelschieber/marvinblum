@@ -1,10 +1,9 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
 	"github.com/Kugelschieber/marvinblum.de/blog"
 	"github.com/Kugelschieber/marvinblum.de/tpl"
+	"github.com/Kugelschieber/marvinblum.de/tracking"
 	"github.com/NYTimes/gziphandler"
 	"github.com/caddyserver/certmagic"
 	emvi "github.com/emvi/api-go"
@@ -16,17 +15,15 @@ import (
 	"html/template"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
 
 const (
-	staticDir        = "static"
-	staticDirPrefix  = "/static/"
-	logTimeFormat    = "2006-01-02_15:04:05"
-	envPrefix        = "MB_"
-	connectionString = `host=%s port=%s user=%s password=%s dbname=%s sslmode=%s sslcert=%s sslkey=%s sslrootcert=%s connectTimeout=%s timezone=%s`
+	staticDir       = "static"
+	staticDirPrefix = "/static/"
+	logTimeFormat   = "2006-01-02_15:04:05"
+	envPrefix       = "MB_"
 )
 
 var (
@@ -56,53 +53,6 @@ func logEnvConfig() {
 			logbuch.Info(pair[0] + "=" + pair[1])
 		}
 	}
-}
-
-func setupTracker() {
-	logbuch.Info("Connecting to database...")
-	host := os.Getenv("MB_DB_HOST")
-	port := os.Getenv("MB_DB_PORT")
-	user := os.Getenv("MB_DB_USER")
-	password := os.Getenv("MB_DB_PASSWORD")
-	schema := os.Getenv("MB_DB_SCHEMA")
-	sslMode := os.Getenv("MB_DB_SSLMODE")
-	sslCert := os.Getenv("MB_DB_SSLCERT")
-	sslKey := os.Getenv("MB_DB_SSLKEY")
-	sslRootCert := os.Getenv("MB_DB_SSLROOTCERT")
-	zone, offset := time.Now().Zone()
-	timezone := zone + strconv.Itoa(-offset/3600)
-	logbuch.Info("Setting time zone", logbuch.Fields{"timezone": timezone})
-	connectionStr := fmt.Sprintf(connectionString, host, port, user, password, schema, sslMode, sslCert, sslKey, sslRootCert, "30", timezone)
-	db, err := sql.Open("postgres", connectionStr)
-
-	if err != nil {
-		logbuch.Fatal("Error connecting to database", logbuch.Fields{"err": err})
-	}
-
-	if err := db.Ping(); err != nil {
-		logbuch.Fatal("Error pinging database", logbuch.Fields{"err": err})
-	}
-
-	store := pirsch.NewPostgresStore(db)
-	tracker = pirsch.NewTracker(store, nil)
-	processor := pirsch.NewProcessor(store)
-	processTrackingData(processor)
-	pirsch.RunAtMidnight(func() {
-		processTrackingData(processor)
-	})
-}
-
-func processTrackingData(processor *pirsch.Processor) {
-	logbuch.Info("Processing tracking data...")
-
-	defer func() {
-		if err := recover(); err != nil {
-			logbuch.Error("Error processing tracking data", logbuch.Fields{"err": err})
-		}
-	}()
-
-	processor.Process()
-	logbuch.Info("Done processing tracking data")
 }
 
 func serveAbout() http.HandlerFunc {
@@ -217,7 +167,7 @@ func start(handler http.Handler) {
 func main() {
 	configureLog()
 	logEnvConfig()
-	setupTracker()
+	tracker = tracking.NewTracker()
 	tplCache = tpl.NewCache()
 	blogInstance = blog.NewBlog(tplCache)
 	router := setupRouter()

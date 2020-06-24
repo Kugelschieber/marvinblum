@@ -8,7 +8,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.0.2 // indirect
 	github.com/emvi/api-go v0.0.0-20191210194347-0a945446f6a8
 	github.com/emvi/logbuch v1.1.1
-	github.com/emvi/pirsch v0.0.0-20200623193552-b3a3d4a6434d
+	github.com/emvi/pirsch v0.0.0-20200624123353-86381b017755
 	github.com/gorilla/mux v1.7.4
 	github.com/gosimple/slug v1.9.0
 	github.com/jmoiron/sqlx v1.2.0 // indirect
