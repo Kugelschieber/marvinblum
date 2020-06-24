@@ -1,11 +1,11 @@
 package main
 
 import (
+	"context"
 	"github.com/Kugelschieber/marvinblum.de/blog"
 	"github.com/Kugelschieber/marvinblum.de/tpl"
 	"github.com/Kugelschieber/marvinblum.de/tracking"
 	"github.com/NYTimes/gziphandler"
-	"github.com/caddyserver/certmagic"
 	emvi "github.com/emvi/api-go"
 	"github.com/emvi/logbuch"
 	"github.com/emvi/pirsch"
@@ -15,6 +15,7 @@ import (
 	"html/template"
 	"net/http"
 	"os"
+	"os/signal"
 	"strings"
 	"time"
 )
@@ -24,6 +25,7 @@ const (
 	staticDirPrefix = "/static/"
 	logTimeFormat   = "2006-01-02_15:04:05"
 	envPrefix       = "MB_"
+	shutdownTimeout = time.Second * 30
 )
 
 var (
@@ -147,21 +149,28 @@ func configureCors(router *mux.Router) http.Handler {
 
 func start(handler http.Handler) {
 	logbuch.Info("Starting server...")
+	var server http.Server
+	server.Handler = handler
+	server.Addr = os.Getenv("MB_HOST")
 
-	if strings.ToLower(os.Getenv("MB_TLS")) == "true" {
-		logbuch.Info("TLS enabled")
-		certmagic.DefaultACME.Agreed = true
-		certmagic.DefaultACME.Email = os.Getenv("MB_TLS_EMAIL")
-		certmagic.DefaultACME.CA = certmagic.LetsEncryptProductionCA
+	go func() {
+		sigint := make(chan os.Signal)
+		signal.Notify(sigint, os.Interrupt)
+		<-sigint
+		logbuch.Info("Shutting down server...")
+		tracker.Stop()
+		ctx, _ := context.WithTimeout(context.Background(), shutdownTimeout)
 
-		if err := certmagic.HTTPS(strings.Split(os.Getenv("MB_DOMAIN"), ","), handler); err != nil {
-			logbuch.Fatal("Error starting server", logbuch.Fields{"err": err})
+		if err := server.Shutdown(ctx); err != nil {
+			logbuch.Fatal("Error shutting down server gracefully", logbuch.Fields{"err": err})
 		}
-	} else {
-		if err := http.ListenAndServe(os.Getenv("MB_HOST"), handler); err != nil {
-			logbuch.Fatal("Error starting server", logbuch.Fields{"err": err})
-		}
+	}()
+
+	if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		logbuch.Fatal("Error starting server", logbuch.Fields{"err": err})
 	}
+
+	logbuch.Info("Server shut down")
 }
 
 func main() {
