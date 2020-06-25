@@ -2,6 +2,7 @@ package tpl
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/emvi/logbuch"
 	"github.com/gosimple/slug"
 	"html/template"
@@ -35,10 +36,10 @@ func NewCache() *Cache {
 func (cache *Cache) load() {
 	logbuch.Debug("Loading templates")
 	funcMap := template.FuncMap{
-		"slug": slug.Make,
-		"format": func(t time.Time, layout string) string {
-			return t.Format(layout)
-		},
+		"slug":     slug.Make,
+		"format":   func(t time.Time, layout string) string { return t.Format(layout) },
+		"multiply": func(f, x float64) float64 { return f * x },
+		"round":    func(f float64) string { return fmt.Sprintf("%.2f", f) },
 	}
 	var err error
 	cache.tpl, err = template.New("").Funcs(funcMap).ParseGlob(templateDir)

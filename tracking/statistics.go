@@ -2,6 +2,7 @@ package tracking
 
 import (
 	"fmt"
+	"github.com/emvi/logbuch"
 	"github.com/emvi/pirsch"
 	"html/template"
 	"strings"
@@ -19,12 +20,10 @@ type PageVisits struct {
 }
 
 func GetTotalVisitors(start int) (template.JS, template.JS) {
-	startTime := today()
-	startTime = startTime.Add(-time.Hour * 24 * time.Duration(start-1))
-	analyzer := pirsch.NewAnalyzer(store)
-	visitors, err := analyzer.Visitors(&pirsch.Filter{From: startTime, To: today()})
+	visitors, err := analyzer.Visitors(&pirsch.Filter{From: getStartTime(start), To: today()})
 
 	if err != nil {
+		logbuch.Error("Error reading visitor statistics", logbuch.Fields{"err": err})
 		return "", ""
 	}
 
@@ -32,12 +31,10 @@ func GetTotalVisitors(start int) (template.JS, template.JS) {
 }
 
 func GetPageVisits(start int) []PageVisits {
-	startTime := today()
-	startTime = startTime.Add(-time.Hour * 24 * time.Duration(start-1))
-	analyzer := pirsch.NewAnalyzer(store)
-	visits, err := analyzer.PageVisits(&pirsch.Filter{From: startTime, To: today()})
+	visits, err := analyzer.PageVisits(&pirsch.Filter{From: getStartTime(start), To: today()})
 
 	if err != nil {
+		logbuch.Error("Error reading page statistics", logbuch.Fields{"err": err})
 		return nil
 	}
 
@@ -49,6 +46,26 @@ func GetPageVisits(start int) []PageVisits {
 	}
 
 	return pageVisits
+}
+
+func GetLanguages(start int) []pirsch.VisitorLanguage {
+	languages, _, err := analyzer.Languages(&pirsch.Filter{From: getStartTime(start), To: today()})
+
+	if err != nil {
+		logbuch.Error("Error reading language statistics", logbuch.Fields{"err": err})
+		return nil
+	}
+
+	if len(languages) > 10 {
+		return languages[:10]
+	}
+
+	return languages
+}
+
+func getStartTime(start int) time.Time {
+	startTime := today()
+	return startTime.Add(-time.Hour * 24 * time.Duration(start-1))
 }
 
 func getLabelsAndData(visitors []pirsch.VisitorsPerDay) (template.JS, template.JS) {

@@ -32,11 +32,33 @@
     </section>
 {{end}}
 
+<section>
+    <h2>Languages</h2>
+    <p>
+        Here are the top 10 languages used by my visitors.
+    </p>
+    <table>
+        <thead>
+            <tr>
+                <th>Language</th>
+                <th>Absolute</th>
+                <th>Relative</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range $data := .Languages}}
+                <tr>
+                    <td>{{if $data.Language}}{{$data.Language}}{{else}}(not set){{end}}</td>
+                    <td>{{$data.Visitors}}</td>
+                    <td>{{round (multiply $data.RelativeVisitors 100)}} %</td>
+                </tr>
+            {{end}}
+        </tbody>
+    </table>
+</section>
+
 <!-- TODO -->
 <!--<section>
-    <h2>Languages</h2>
-</section>
-<section>
     <h2>Visitors Per Hour</h2>
 </section>-->
 

@@ -15,8 +15,11 @@ const (
 	connectionString = `host=%s port=%s user=%s password=%s dbname=%s sslmode=%s sslcert=%s sslkey=%s sslrootcert=%s connectTimeout=%s timezone=%s`
 )
 
-var db *sqlx.DB
-var store pirsch.Store
+var (
+	db       *sqlx.DB
+	store    pirsch.Store
+	analyzer *pirsch.Analyzer
+)
 
 func NewTracker() *pirsch.Tracker {
 	logbuch.Info("Connecting to database...")
@@ -48,6 +51,7 @@ func NewTracker() *pirsch.Tracker {
 	db = sqlx.NewDb(conn, "postgres")
 	store = pirsch.NewPostgresStore(conn)
 	tracker := pirsch.NewTracker(store, nil)
+	analyzer = pirsch.NewAnalyzer(store)
 	processor := pirsch.NewProcessor(store)
 	processTrackingData(processor)
 	pirsch.RunAtMidnight(func() {

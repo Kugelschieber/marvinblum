@@ -133,11 +133,13 @@ func serveTracking() http.HandlerFunc {
 			TotalVisitorsLabels template.JS
 			TotalVisitorsDps    template.JS
 			PageVisits          []tracking.PageVisits
+			Languages           []pirsch.VisitorLanguage
 		}{
 			start,
 			totalVisitorsLabels,
 			totalVisitorsDps,
 			tracking.GetPageVisits(start),
+			tracking.GetLanguages(start),
 		})
 	}
 }
