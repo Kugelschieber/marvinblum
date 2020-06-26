@@ -52,6 +52,19 @@ body {
     height: 300px;
 }
 
+.tracking-form {
+    display: flex;
+    align-items: center;
+}
+
+.tracking-form input {
+    margin: 3px 6px 3px 0;
+}
+
+input {
+    padding: 2px;
+}
+
 section {
     margin: 80px 0;
 }
@@ -79,6 +92,10 @@ p {
     }
 
     .menu {
+        display: block;
+    }
+
+    .tracking-form {
         display: block;
     }
 }

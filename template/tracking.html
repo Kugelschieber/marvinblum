@@ -4,7 +4,7 @@
 <section>
     <h1>Tracking</h1>
     <p>
-        This page shows tracking statistics for my website using <a href="https://github.com/emvi/pirsch" target="_blank">Pirsch</a> and <a href="https://www.chartjs.org/" target="_blank">Chart.Js</a>. The data shows unique visitors.
+        This page shows tracking statistics for my website using <a href="https://github.com/emvi/pirsch" target="_blank">Pirsch</a> and <a href="https://www.chartjs.org/" target="_blank">Chart.Js</a>. The data shows unique visitors. All times and dates are UTC.
     </p>
     <p>
         <a href="/tracking?start=7" class="button {{if eq .Start 7}}filled{{end}}">Week</a>
@@ -13,11 +13,19 @@
         <a href="/tracking?start=182" class="button {{if eq .Start 182}}filled{{end}}">Half Year</a>
         <a href="/tracking?start=365" class="button {{if eq .Start 365}}filled{{end}}">Year</a>
     </p>
+    <form class="tracking-form">
+        <input type="date" name="start-date" value="{{format .StartDate "2006-01-02"}}" />
+        <input type="date" name="end-date" value="{{format .EndDate "2006-01-02"}}" />
+        <input type="submit" value="Update" />
+    </form>
 </section>
 <section>
     <h2>Active Visitors</h2>
     <p>
-        Active within the last five minutes: {{.ActiveVisitors}}
+        Active visitors within the last five minutes: {{.ActiveVisitors}}
+    </p>
+    <p>
+        The next diagram shows active visitors for each hour of today.
     </p>
     <canvas id="hourlyVisitorsToday" class="tracking"></canvas>
 </section>
@@ -27,10 +35,37 @@
 </section>
 <section>
     <h2>Visitors Per Hour</h2>
+    <p>
+        This is the cumulated visitor count per hour on each day of the selected time frame.
+    </p>
     <canvas id="hourlyVisitors" class="tracking"></canvas>
 </section>
 <section>
-    <h2>Pages Visits</h2>
+    <h2>Languages</h2>
+    <p>
+        Here are the top 10 languages used by my visitors.
+    </p>
+    <table>
+        <thead>
+        <tr>
+            <th>Language</th>
+            <th>Absolute</th>
+            <th>Relative</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{range $data := .Languages}}
+            <tr>
+                <td>{{if $data.Language}}{{$data.Language}}{{else}}(not set){{end}}</td>
+                <td>{{$data.Visitors}}</td>
+                <td>{{round (multiply $data.RelativeVisitors 100)}} %</td>
+            </tr>
+        {{end}}
+        </tbody>
+    </table>
+</section>
+<section>
+    <h2>Page Visits</h2>
 </section>
 
 {{range $i, $data := .PageVisits}}
@@ -40,39 +75,14 @@
     </section>
 {{end}}
 
-<section>
-    <h2>Languages</h2>
-    <p>
-        Here are the top 10 languages used by my visitors.
-    </p>
-    <table>
-        <thead>
-            <tr>
-                <th>Language</th>
-                <th>Absolute</th>
-                <th>Relative</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{range $data := .Languages}}
-                <tr>
-                    <td>{{if $data.Language}}{{$data.Language}}{{else}}(not set){{end}}</td>
-                    <td>{{$data.Visitors}}</td>
-                    <td>{{round (multiply $data.RelativeVisitors 100)}} %</td>
-                </tr>
-            {{end}}
-        </tbody>
-    </table>
-</section>
-
 <script type="text/javascript" src="/static/js/Chart-v2.9.3.bundle.min.js"></script>
 <script type="text/javascript">
     new Chart(document.getElementById('hourlyVisitorsToday').getContext('2d'), {
-        type: "line",
+        type: "bar",
         data: {
             labels: [{{.HourlyVisitorsTodayLabels}}],
             datasets: [{
-                backgroundColor: "rgba(127, 127, 127, 0.05)",
+                backgroundColor: "#7f7f7f",
                 borderColor: "#7f7f7f",
                 label: "Hourly Visitors for Today",
                 data: [{{.HourlyVisitorsTodayDps}}]
@@ -94,11 +104,11 @@
     });
 
     new Chart(document.getElementById('hourlyVisitors').getContext('2d'), {
-        type: "line",
+        type: "bar",
         data: {
             labels: [{{.HourlyVisitorsLabels}}],
             datasets: [{
-                backgroundColor: "rgba(127, 127, 127, 0.05)",
+                backgroundColor: "#7f7f7f",
                 borderColor: "#7f7f7f",
                 label: "Hourly Visitors",
                 data: [{{.HourlyVisitorsDps}}]

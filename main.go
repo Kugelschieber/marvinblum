@@ -128,11 +128,27 @@ func serveTracking() http.HandlerFunc {
 			start = 7
 		}
 
-		totalVisitorsLabels, totalVisitorsDps := tracking.GetTotalVisitors(start)
-		hourlyVisitorsLabels, hourlyVisitorsDps := tracking.GetHourlyVisitors(start)
+		var startDate, endDate time.Time
+
+		if err := r.ParseForm(); err != nil {
+			logbuch.Warn("Error parsing tracking form", logbuch.Fields{"err": err})
+		} else {
+			startDate, _ = time.Parse("2006-01-02", r.FormValue("start-date"))
+			endDate, _ = time.Parse("2006-01-02", r.FormValue("end-date"))
+		}
+
+		if startDate.IsZero() || endDate.IsZero() {
+			startDate = time.Now().UTC().Add(-time.Hour * 24 * time.Duration(start))
+			endDate = time.Now().UTC()
+		}
+
+		totalVisitorsLabels, totalVisitorsDps := tracking.GetTotalVisitors(startDate, endDate)
+		hourlyVisitorsLabels, hourlyVisitorsDps := tracking.GetHourlyVisitors(startDate, endDate)
 		hourlyVisitorsTodayLabels, hourlyVisitorsTodayDps := tracking.GetHourlyVisitorsToday()
 		tplCache.RenderWithoutCache(w, "tracking.html", struct {
 			Start                     int
+			StartDate                 time.Time
+			EndDate                   time.Time
 			TotalVisitorsLabels       template.JS
 			TotalVisitorsDps          template.JS
 			PageVisits                []tracking.PageVisits
@@ -144,10 +160,12 @@ func serveTracking() http.HandlerFunc {
 			ActiveVisitors            int
 		}{
 			start,
+			startDate,
+			endDate,
 			totalVisitorsLabels,
 			totalVisitorsDps,
-			tracking.GetPageVisits(start),
-			tracking.GetLanguages(start),
+			tracking.GetPageVisits(startDate, endDate),
+			tracking.GetLanguages(startDate, endDate),
 			hourlyVisitorsLabels,
 			hourlyVisitorsDps,
 			hourlyVisitorsTodayLabels,

@@ -19,8 +19,8 @@ type PageVisits struct {
 	Data   template.JS
 }
 
-func GetTotalVisitors(start int) (template.JS, template.JS) {
-	visitors, err := analyzer.Visitors(&pirsch.Filter{From: getStartTime(start), To: today()})
+func GetTotalVisitors(startDate, endDate time.Time) (template.JS, template.JS) {
+	visitors, err := analyzer.Visitors(&pirsch.Filter{From: startDate, To: endDate})
 
 	if err != nil {
 		logbuch.Error("Error reading visitor statistics", logbuch.Fields{"err": err})
@@ -30,8 +30,8 @@ func GetTotalVisitors(start int) (template.JS, template.JS) {
 	return getLabelsAndData(visitors)
 }
 
-func GetPageVisits(start int) []PageVisits {
-	visits, err := analyzer.PageVisits(&pirsch.Filter{From: getStartTime(start), To: today()})
+func GetPageVisits(startDate, endDate time.Time) []PageVisits {
+	visits, err := analyzer.PageVisits(&pirsch.Filter{From: startDate, To: endDate})
 
 	if err != nil {
 		logbuch.Error("Error reading page statistics", logbuch.Fields{"err": err})
@@ -48,8 +48,8 @@ func GetPageVisits(start int) []PageVisits {
 	return pageVisits
 }
 
-func GetLanguages(start int) []pirsch.VisitorLanguage {
-	languages, _, err := analyzer.Languages(&pirsch.Filter{From: getStartTime(start), To: today()})
+func GetLanguages(startDate, endDate time.Time) []pirsch.VisitorLanguage {
+	languages, _, err := analyzer.Languages(&pirsch.Filter{From: startDate, To: endDate})
 
 	if err != nil {
 		logbuch.Error("Error reading language statistics", logbuch.Fields{"err": err})
@@ -63,8 +63,8 @@ func GetLanguages(start int) []pirsch.VisitorLanguage {
 	return languages
 }
 
-func GetHourlyVisitors(start int) (template.JS, template.JS) {
-	visitors, err := analyzer.HourlyVisitors(&pirsch.Filter{From: getStartTime(start), To: today()})
+func GetHourlyVisitors(startDate, endDate time.Time) (template.JS, template.JS) {
+	visitors, err := analyzer.HourlyVisitors(&pirsch.Filter{From: startDate, To: endDate})
 
 	if err != nil {
 		logbuch.Error("Error reading hourly visitors", logbuch.Fields{"err": err})
