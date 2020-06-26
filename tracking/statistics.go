@@ -63,6 +63,39 @@ func GetLanguages(start int) []pirsch.VisitorLanguage {
 	return languages
 }
 
+func GetHourlyVisitors(start int) (template.JS, template.JS) {
+	visitors, err := analyzer.HourlyVisitors(&pirsch.Filter{From: getStartTime(start), To: today()})
+
+	if err != nil {
+		logbuch.Error("Error reading hourly visitors", logbuch.Fields{"err": err})
+		return "", ""
+	}
+
+	return getLabelsAndDataHourly(visitors)
+}
+
+func GetHourlyVisitorsToday() (template.JS, template.JS) {
+	visitors, err := analyzer.HourlyVisitors(&pirsch.Filter{From: today(), To: today()})
+
+	if err != nil {
+		logbuch.Error("Error reading hourly visitors for today", logbuch.Fields{"err": err})
+		return "", ""
+	}
+
+	return getLabelsAndDataHourly(visitors)
+}
+
+func GetActiveVisitors() int {
+	visitors, err := analyzer.ActiveVisitors(time.Minute * 5)
+
+	if err != nil {
+		logbuch.Error("Error reading active visitors", logbuch.Fields{"err": err})
+		return 0
+	}
+
+	return visitors
+}
+
 func getStartTime(start int) time.Time {
 	startTime := today()
 	return startTime.Add(-time.Hour * 24 * time.Duration(start-1))
@@ -74,6 +107,20 @@ func getLabelsAndData(visitors []pirsch.VisitorsPerDay) (template.JS, template.J
 
 	for _, point := range visitors {
 		labels.WriteString(fmt.Sprintf("'%s',", point.Day.Format(statisticsDateFormat)))
+		dp.WriteString(fmt.Sprintf("%d,", point.Visitors))
+	}
+
+	labelsStr := labels.String()
+	dataStr := dp.String()
+	return template.JS(labelsStr[:len(labelsStr)-1]), template.JS(dataStr[:len(dataStr)-1])
+}
+
+func getLabelsAndDataHourly(visitors []pirsch.HourlyVisitors) (template.JS, template.JS) {
+	var labels strings.Builder
+	var dp strings.Builder
+
+	for _, point := range visitors {
+		labels.WriteString(fmt.Sprintf("'%d',", point.Hour))
 		dp.WriteString(fmt.Sprintf("%d,", point.Visitors))
 	}
 

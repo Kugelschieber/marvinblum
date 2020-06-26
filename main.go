@@ -119,6 +119,7 @@ func serveBlogArticle() http.HandlerFunc {
 
 func serveTracking() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		tracker.Hit(r)
 		start, _ := strconv.Atoi(r.URL.Query().Get("start"))
 
 		if start > 365 {
@@ -128,18 +129,30 @@ func serveTracking() http.HandlerFunc {
 		}
 
 		totalVisitorsLabels, totalVisitorsDps := tracking.GetTotalVisitors(start)
+		hourlyVisitorsLabels, hourlyVisitorsDps := tracking.GetHourlyVisitors(start)
+		hourlyVisitorsTodayLabels, hourlyVisitorsTodayDps := tracking.GetHourlyVisitorsToday()
 		tplCache.RenderWithoutCache(w, "tracking.html", struct {
-			Start               int
-			TotalVisitorsLabels template.JS
-			TotalVisitorsDps    template.JS
-			PageVisits          []tracking.PageVisits
-			Languages           []pirsch.VisitorLanguage
+			Start                     int
+			TotalVisitorsLabels       template.JS
+			TotalVisitorsDps          template.JS
+			PageVisits                []tracking.PageVisits
+			Languages                 []pirsch.VisitorLanguage
+			HourlyVisitorsLabels      template.JS
+			HourlyVisitorsDps         template.JS
+			HourlyVisitorsTodayLabels template.JS
+			HourlyVisitorsTodayDps    template.JS
+			ActiveVisitors            int
 		}{
 			start,
 			totalVisitorsLabels,
 			totalVisitorsDps,
 			tracking.GetPageVisits(start),
 			tracking.GetLanguages(start),
+			hourlyVisitorsLabels,
+			hourlyVisitorsDps,
+			hourlyVisitorsTodayLabels,
+			hourlyVisitorsTodayDps,
+			tracking.GetActiveVisitors(),
 		})
 	}
 }

@@ -97,6 +97,8 @@ github.com/emvi/pirsch v0.0.0-20200625145826-bf2196e7b9f8 h1:m/3rKmlG0s6nlW+yvND
 github.com/emvi/pirsch v0.0.0-20200625145826-bf2196e7b9f8/go.mod h1:+YmBbltJ3feZz9L/QQyqwywltYvQKBfzrGD51TPKl5g=
 github.com/emvi/pirsch v0.0.0-20200625182355-75f0aba03718 h1:FOaeJg2A9rGb5WMZsnW/2SorGesIoVn9doW1Okgt1BU=
 github.com/emvi/pirsch v0.0.0-20200625182355-75f0aba03718/go.mod h1:+YmBbltJ3feZz9L/QQyqwywltYvQKBfzrGD51TPKl5g=
+github.com/emvi/pirsch v0.0.0-20200625233854-9bc410bf1483 h1:hTW+M/0XaAEn1+bpXL/z2DZAFU1xgvKk56OgL1lodSU=
+github.com/emvi/pirsch v0.0.0-20200625233854-9bc410bf1483/go.mod h1:+YmBbltJ3feZz9L/QQyqwywltYvQKBfzrGD51TPKl5g=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
 github.com/exoscale/egoscale v0.18.1/go.mod h1:Z7OOdzzTOz1Q1PjQXumlz9Wn/CddH0zSYdCF3rnBKXE=

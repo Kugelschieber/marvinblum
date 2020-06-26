@@ -14,12 +14,20 @@
         <a href="/tracking?start=365" class="button {{if eq .Start 365}}filled{{end}}">Year</a>
     </p>
 </section>
-
-<!-- TODO real time -->
-
+<section>
+    <h2>Active Visitors</h2>
+    <p>
+        Active within the last five minutes: {{.ActiveVisitors}}
+    </p>
+    <canvas id="hourlyVisitorsToday" class="tracking"></canvas>
+</section>
 <section>
     <h2>Total Visitors</h2>
     <canvas id="totalVisitors" class="tracking"></canvas>
+</section>
+<section>
+    <h2>Visitors Per Hour</h2>
+    <canvas id="hourlyVisitors" class="tracking"></canvas>
 </section>
 <section>
     <h2>Pages Visits</h2>
@@ -57,13 +65,21 @@
     </table>
 </section>
 
-<!-- TODO -->
-<!--<section>
-    <h2>Visitors Per Hour</h2>
-</section>-->
-
 <script type="text/javascript" src="/static/js/Chart-v2.9.3.bundle.min.js"></script>
 <script type="text/javascript">
+    new Chart(document.getElementById('hourlyVisitorsToday').getContext('2d'), {
+        type: "line",
+        data: {
+            labels: [{{.HourlyVisitorsTodayLabels}}],
+            datasets: [{
+                backgroundColor: "rgba(127, 127, 127, 0.05)",
+                borderColor: "#7f7f7f",
+                label: "Hourly Visitors for Today",
+                data: [{{.HourlyVisitorsTodayDps}}]
+            }]
+        }
+    });
+
     new Chart(document.getElementById('totalVisitors').getContext('2d'), {
         type: "line",
         data: {
@@ -73,6 +89,19 @@
                 borderColor: "#7f7f7f",
                 label: "Total Visitors",
                 data: [{{.TotalVisitorsDps}}]
+            }]
+        }
+    });
+
+    new Chart(document.getElementById('hourlyVisitors').getContext('2d'), {
+        type: "line",
+        data: {
+            labels: [{{.HourlyVisitorsLabels}}],
+            datasets: [{
+                backgroundColor: "rgba(127, 127, 127, 0.05)",
+                borderColor: "#7f7f7f",
+                label: "Hourly Visitors",
+                data: [{{.HourlyVisitorsDps}}]
             }]
         }
     });
