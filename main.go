@@ -89,7 +89,6 @@ func serveBlogPage() http.HandlerFunc {
 
 func serveBlogArticle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tracker.Hit(r)
 		vars := mux.Vars(r)
 		slug := strings.Split(vars["slug"], "-")
 
@@ -104,6 +103,9 @@ func serveBlogArticle() http.HandlerFunc {
 			http.Redirect(w, r, "/notfound", http.StatusFound)
 			return
 		}
+
+		// track the hit if the article was found, otherwise we don't care
+		tracker.Hit(r)
 
 		tplCache.Render(w, "article.html", struct {
 			Title     string
