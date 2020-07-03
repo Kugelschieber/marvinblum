@@ -50,7 +50,7 @@ func NewTracker() *pirsch.Tracker {
 
 	db = sqlx.NewDb(conn, "postgres")
 	store = pirsch.NewPostgresStore(conn)
-	tracker := pirsch.NewTracker(store, nil)
+	tracker := pirsch.NewTracker(store, os.Getenv("MB_TRACKING_SALT"), nil)
 	analyzer = pirsch.NewAnalyzer(store)
 	processor := pirsch.NewProcessor(store)
 	processTrackingData(processor)
