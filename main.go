@@ -107,7 +107,7 @@ func serveBlogArticle() http.HandlerFunc {
 		// track the hit if the article was found, otherwise we don't care
 		tracker.Hit(r)
 
-		tplCache.Render(w, "article.html", struct {
+		tplCache.RenderWithoutCache(w, "article.html", struct {
 			Title     string
 			Content   template.HTML
 			Published time.Time
