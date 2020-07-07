@@ -61,6 +61,33 @@ body {
     margin: 3px 6px 3px 0;
 }
 
+.embed {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    border: 1px dotted #121212;
+    padding: 1rem 1.5rem;
+}
+
+.embed .image {
+    max-width: 200px;
+    max-height: 200px;
+}
+
+.embed .info {
+    padding: 1rem 1.5rem;
+}
+
+.embed .info .title {
+    font-weight: bold;
+    margin: 0 0 10px 0;
+}
+
+.embed .info .url {
+    margin: 10px 0 0 0;
+}
+
 input {
     padding: 2px;
 }
