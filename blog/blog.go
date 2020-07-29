@@ -96,7 +96,7 @@ func (blog *Blog) loadArticles() {
 		})
 
 		if err != nil {
-			logbuch.Error("Error loading blog articleMap", logbuch.Fields{"err": err})
+			logbuch.Error("Error loading blog article", logbuch.Fields{"err": err})
 			break
 		}
 
