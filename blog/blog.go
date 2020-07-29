@@ -28,8 +28,9 @@ var (
 
 type Blog struct {
 	client       *emvi.Client
-	articles     map[string]emvi.Article // id -> article
-	articlesYear map[int][]emvi.Article  // year -> articles
+	articles     []emvi.Article          // sorted by date published (descending)
+	articleMap   map[string]emvi.Article // id -> article
+	articlesYear map[int][]emvi.Article  // year -> articleMap
 	nextUpdate   time.Time
 	cache        *tpl.Cache
 	m            sync.Mutex
@@ -54,7 +55,7 @@ func NewBlog(cache *tpl.Cache) *Blog {
 
 func (blog *Blog) GetArticle(id string) emvi.Article {
 	blog.refreshIfRequired()
-	return blog.articles[id]
+	return blog.articleMap[id]
 }
 
 func (blog *Blog) GetArticles() map[int][]emvi.Article {
@@ -65,7 +66,7 @@ func (blog *Blog) GetArticles() map[int][]emvi.Article {
 func (blog *Blog) GetLatestArticles() []emvi.Article {
 	blog.refreshIfRequired()
 	articles := make([]emvi.Article, 0, 3)
-	i := 0
+	i := 1
 
 	for _, v := range blog.articles {
 		articles = append(articles, v)
@@ -82,8 +83,8 @@ func (blog *Blog) GetLatestArticles() []emvi.Article {
 func (blog *Blog) loadArticles() {
 	blog.m.Lock()
 	defer blog.m.Unlock()
-	logbuch.Info("Refreshing blog articles...")
-	articles, offset, count := make(map[string]emvi.Article), 0, 1
+	logbuch.Info("Refreshing blog articleMap...")
+	articles, offset, count := make([]emvi.Article, 0), 0, 1
 	var err error
 
 	for count > 0 {
@@ -95,7 +96,7 @@ func (blog *Blog) loadArticles() {
 		})
 
 		if err != nil {
-			logbuch.Error("Error loading blog articles", logbuch.Fields{"err": err})
+			logbuch.Error("Error loading blog articleMap", logbuch.Fields{"err": err})
 			break
 		}
 
@@ -103,14 +104,14 @@ func (blog *Blog) loadArticles() {
 		count = len(results)
 
 		for _, article := range results {
-			articles[article.Id] = article
+			articles = append(articles, article)
 		}
 	}
 
 	if err == nil {
-		for k, v := range articles {
-			v.LatestArticleContent = blog.loadArticle(v)
-			articles[k] = v
+		for i, article := range articles {
+			article.LatestArticleContent = blog.loadArticle(article)
+			articles[i] = article
 		}
 
 		blog.setArticles(articles)
@@ -121,7 +122,7 @@ func (blog *Blog) loadArticles() {
 }
 
 func (blog *Blog) loadArticle(article emvi.Article) *emvi.ArticleContent {
-	existingArticle := blog.articles[article.Id]
+	existingArticle := blog.articleMap[article.Id]
 	var content *emvi.ArticleContent
 
 	if len(existingArticle.Id) == 0 || !existingArticle.ModTime.Equal(article.ModTime) {
@@ -164,12 +165,15 @@ func (blog *Blog) downloadAttachments(id, content string) {
 				continue
 			}
 
-			defer resp.Body.Close()
 			data, err := ioutil.ReadAll(resp.Body)
 
 			if err != nil {
 				logbuch.Error("Error reading blog attachment body", logbuch.Fields{"err": err, "id": id})
 				continue
+			}
+
+			if err := resp.Body.Close(); err != nil {
+				logbuch.Error("Error closing response body on attachment download", logbuch.Fields{"err": err, "id": id})
 			}
 
 			if err := ioutil.WriteFile(filepath.Join(blogFileCache, id, attachment[3]), data, 0755); err != nil {
@@ -179,8 +183,9 @@ func (blog *Blog) downloadAttachments(id, content string) {
 	}
 }
 
-func (blog *Blog) setArticles(articles map[string]emvi.Article) {
+func (blog *Blog) setArticles(articles []emvi.Article) {
 	blog.articles = articles
+	blog.articleMap = make(map[string]emvi.Article)
 	blog.articlesYear = make(map[int][]emvi.Article)
 
 	for _, article := range articles {
@@ -189,6 +194,7 @@ func (blog *Blog) setArticles(articles map[string]emvi.Article) {
 		}
 
 		blog.articlesYear[article.Published.Year()] = append(blog.articlesYear[article.Published.Year()], article)
+		blog.articleMap[article.Id] = article
 	}
 }
 

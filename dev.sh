@@ -2,6 +2,7 @@
 
 # This file is for local development only!
 # It configures and starts the website for local development.
+# The "secret" for the Emvi API can be shared, as it gives access to public content only.
 
 export MB_LOGLEVEL=debug
 export MB_ALLOWED_ORIGINS=*

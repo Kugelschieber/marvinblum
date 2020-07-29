@@ -10,8 +10,9 @@
 
         {{range $article := $articles}}
             <p>
-                <a href="/blog/{{slug $article.LatestArticleContent.Title}}-{{$article.Id}}">{{$article.LatestArticleContent.Title}}</a>
                 <small>{{format $article.Published "2. January 2006"}}</small>
+                <br />
+                <a href="/blog/{{slug $article.LatestArticleContent.Title}}-{{$article.Id}}">{{$article.LatestArticleContent.Title}}</a>
             </p>
         {{end}}
     </section>
