@@ -86,7 +86,7 @@ func GetHourlyVisitorsToday() (template.JS, template.JS) {
 }
 
 func GetActiveVisitors() int {
-	visitors, err := analyzer.ActiveVisitors(time.Minute * 5)
+	visitors, err := analyzer.ActiveVisitors(pirsch.NullTenant, time.Minute*5)
 
 	if err != nil {
 		logbuch.Error("Error reading active visitors", logbuch.Fields{"err": err})
@@ -94,11 +94,6 @@ func GetActiveVisitors() int {
 	}
 
 	return visitors
-}
-
-func getStartTime(start int) time.Time {
-	startTime := today()
-	return startTime.Add(-time.Hour * 24 * time.Duration(start-1))
 }
 
 func getLabelsAndData(visitors []pirsch.VisitorsPerDay) (template.JS, template.JS) {
