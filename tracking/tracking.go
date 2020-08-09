@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/emvi/logbuch"
 	"github.com/emvi/pirsch"
-	"github.com/jmoiron/sqlx"
 	"os"
 	"strconv"
 	"time"
@@ -16,7 +15,6 @@ const (
 )
 
 var (
-	db       *sqlx.DB
 	store    pirsch.Store
 	analyzer *pirsch.Analyzer
 )
@@ -48,7 +46,6 @@ func NewTracker() *pirsch.Tracker {
 		return nil
 	}
 
-	db = sqlx.NewDb(conn, "postgres")
 	store = pirsch.NewPostgresStore(conn)
 	tracker := pirsch.NewTracker(store, os.Getenv("MB_TRACKING_SALT"), nil)
 	analyzer = pirsch.NewAnalyzer(store)
@@ -69,6 +66,9 @@ func processTrackingData(processor *pirsch.Processor) {
 		}
 	}()
 
-	processor.Process()
-	logbuch.Info("Done processing tracking data")
+	if err := processor.Process(); err != nil {
+		logbuch.Error("Error processing tracking data", logbuch.Fields{"err": err})
+	} else {
+		logbuch.Info("Done processing tracking data")
+	}
 }
