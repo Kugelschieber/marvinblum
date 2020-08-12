@@ -28,6 +28,25 @@
         The next diagram shows active visitors for each hour of today.
     </p>
     <canvas id="hourlyVisitorsToday" class="tracking"></canvas>
+    <p>
+        The next table shows where the active visitors are for the past 30 seconds. Visitors switching between pages fast do create duplicate entries in the table.
+    </p>
+    <table>
+        <thead>
+            <tr>
+                <th>Path</th>
+                <th>Visitors</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range $data := .ActiveVisitorPages}}
+                <tr>
+                    <td>{{$data.Path}}</td>
+                    <td>{{$data.Visitors}}</td>
+                </tr>
+            {{end}}
+        </tbody>
+    </table>
 </section>
 <section>
     <h2>Total Visitors</h2>
@@ -41,26 +60,70 @@
     <canvas id="hourlyVisitors" class="tracking"></canvas>
 </section>
 <section>
+    <h2>Pages</h2>
+    <p>
+        Here are the top 10 visited pages.
+    </p>
+    <table>
+        <thead>
+            <tr>
+                <th>Path</th>
+                <th>Visitors</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range $data := .Pages}}
+                <tr>
+                    <td>{{$data.Path}}</td>
+                    <td>{{$data.Visitors}}</td>
+                </tr>
+            {{end}}
+        </tbody>
+    </table>
+</section>
+<section>
     <h2>Languages</h2>
     <p>
         Here are the top 10 languages used by my visitors.
     </p>
     <table>
         <thead>
-        <tr>
-            <th>Language</th>
-            <th>Absolute</th>
-            <th>Relative</th>
-        </tr>
+            <tr>
+                <th>Language</th>
+                <th>Absolute</th>
+                <th>Relative</th>
+            </tr>
         </thead>
         <tbody>
-        {{range $data := .Languages}}
+            {{range $data := .Languages}}
+                <tr>
+                    <td>{{if $data.Language}}{{$data.Language}}{{else}}(not set){{end}}</td>
+                    <td>{{$data.Visitors}}</td>
+                    <td>{{round (multiply $data.RelativeVisitors 100)}} %</td>
+                </tr>
+            {{end}}
+        </tbody>
+    </table>
+</section>
+<section>
+    <h2>Referer</h2>
+    <p>
+        Here are the top 10 referer.
+    </p>
+    <table>
+        <thead>
             <tr>
-                <td>{{if $data.Language}}{{$data.Language}}{{else}}(not set){{end}}</td>
-                <td>{{$data.Visitors}}</td>
-                <td>{{round (multiply $data.RelativeVisitors 100)}} %</td>
+                <th>Referer</th>
+                <th>Visitors</th>
             </tr>
-        {{end}}
+        </thead>
+        <tbody>
+            {{range $data := .Referer}}
+                <tr>
+                    <td>{{if $data.Referer}}{{$data.Referer}}{{else}}(unknown){{end}}</td>
+                    <td>{{$data.Visitors}}</td>
+                </tr>
+            {{end}}
         </tbody>
     </table>
 </section>

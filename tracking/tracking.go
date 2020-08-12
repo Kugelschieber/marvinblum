@@ -56,7 +56,6 @@ func NewTracker() (*pirsch.Tracker, context.CancelFunc) {
 	})
 	analyzer = pirsch.NewAnalyzer(store)
 	processor := pirsch.NewProcessor(store, nil)
-	processTrackingData(processor)
 	cancel := pirsch.RunAtMidnight(func() {
 		processTrackingData(processor)
 	})

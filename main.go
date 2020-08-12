@@ -154,12 +154,15 @@ func serveTracking() http.HandlerFunc {
 			TotalVisitorsLabels       template.JS
 			TotalVisitorsDps          template.JS
 			PageVisits                []tracking.PageVisits
+			Pages                     []pirsch.VisitorPage
 			Languages                 []pirsch.VisitorLanguage
+			Referer                   []pirsch.VisitorReferer
 			HourlyVisitorsLabels      template.JS
 			HourlyVisitorsDps         template.JS
 			HourlyVisitorsTodayLabels template.JS
 			HourlyVisitorsTodayDps    template.JS
 			ActiveVisitors            int
+			ActiveVisitorPages        []pirsch.PageVisitors
 		}{
 			start,
 			startDate,
@@ -167,12 +170,15 @@ func serveTracking() http.HandlerFunc {
 			totalVisitorsLabels,
 			totalVisitorsDps,
 			tracking.GetPageVisits(startDate, endDate),
+			tracking.GetPages(startDate, endDate),
 			tracking.GetLanguages(startDate, endDate),
+			tracking.GetReferer(startDate, endDate),
 			hourlyVisitorsLabels,
 			hourlyVisitorsDps,
 			hourlyVisitorsTodayLabels,
 			hourlyVisitorsTodayDps,
 			tracking.GetActiveVisitors(),
+			tracking.GetActiveVisitorPages(),
 		})
 	}
 }

@@ -48,6 +48,21 @@ func GetPageVisits(startDate, endDate time.Time) []PageVisits {
 	return pageVisits
 }
 
+func GetPages(startDate, endDate time.Time) []pirsch.VisitorPage {
+	pages, err := analyzer.Pages(&pirsch.Filter{From: startDate, To: endDate})
+
+	if err != nil {
+		logbuch.Error("Error reading page statistics", logbuch.Fields{"err": err})
+		return nil
+	}
+
+	if len(pages) > 10 {
+		return pages[:10]
+	}
+
+	return pages
+}
+
 func GetLanguages(startDate, endDate time.Time) []pirsch.VisitorLanguage {
 	languages, _, err := analyzer.Languages(&pirsch.Filter{From: startDate, To: endDate})
 
@@ -61,6 +76,21 @@ func GetLanguages(startDate, endDate time.Time) []pirsch.VisitorLanguage {
 	}
 
 	return languages
+}
+
+func GetReferer(startDate, endDate time.Time) []pirsch.VisitorReferer {
+	referer, err := analyzer.Referer(&pirsch.Filter{From: startDate, To: endDate})
+
+	if err != nil {
+		logbuch.Error("Error reading referer statistics", logbuch.Fields{"err": err})
+		return nil
+	}
+
+	if len(referer) > 10 {
+		return referer[:10]
+	}
+
+	return referer
 }
 
 func GetHourlyVisitors(startDate, endDate time.Time) (template.JS, template.JS) {
@@ -94,6 +124,17 @@ func GetActiveVisitors() int {
 	}
 
 	return visitors
+}
+
+func GetActiveVisitorPages() []pirsch.PageVisitors {
+	pages, err := analyzer.ActiveVisitorsPages(pirsch.NullTenant, time.Second*30)
+
+	if err != nil {
+		logbuch.Error("Error reading active visitor pages", logbuch.Fields{"err": err})
+		return nil
+	}
+
+	return pages
 }
 
 func getLabelsAndData(visitors []pirsch.VisitorsPerDay) (template.JS, template.JS) {
