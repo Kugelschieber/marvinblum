@@ -209,7 +209,7 @@ func configureCors(router *mux.Router) http.Handler {
 	return c.Handler(router)
 }
 
-func start(handler http.Handler) {
+func start(handler http.Handler, trackingCancel context.CancelFunc) {
 	logbuch.Info("Starting server...")
 	var server http.Server
 	server.Handler = handler
@@ -220,6 +220,7 @@ func start(handler http.Handler) {
 		signal.Notify(sigint, os.Interrupt)
 		<-sigint
 		logbuch.Info("Shutting down server...")
+		trackingCancel()
 		tracker.Stop()
 		ctx, _ := context.WithTimeout(context.Background(), shutdownTimeout)
 
@@ -238,10 +239,11 @@ func start(handler http.Handler) {
 func main() {
 	configureLog()
 	logEnvConfig()
-	tracker = tracking.NewTracker()
+	var trackingCancel context.CancelFunc
+	tracker, trackingCancel = tracking.NewTracker()
 	tplCache = tpl.NewCache()
 	blogInstance = blog.NewBlog(tplCache)
 	router := setupRouter()
 	corsConfig := configureCors(router)
-	start(corsConfig)
+	start(corsConfig, trackingCancel)
 }

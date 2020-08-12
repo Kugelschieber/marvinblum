@@ -1,6 +1,7 @@
 package tracking
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"github.com/emvi/logbuch"
@@ -12,6 +13,7 @@ import (
 
 const (
 	connectionString = `host=%s port=%s user=%s password=%s dbname=%s sslmode=%s sslcert=%s sslkey=%s sslrootcert=%s connectTimeout=%s timezone=%s`
+	domain           = "marvinblum.de"
 )
 
 var (
@@ -19,7 +21,7 @@ var (
 	analyzer *pirsch.Analyzer
 )
 
-func NewTracker() *pirsch.Tracker {
+func NewTracker() (*pirsch.Tracker, context.CancelFunc) {
 	logbuch.Info("Connecting to database...")
 	host := os.Getenv("MB_DB_HOST")
 	port := os.Getenv("MB_DB_PORT")
@@ -38,23 +40,27 @@ func NewTracker() *pirsch.Tracker {
 
 	if err != nil {
 		logbuch.Fatal("Error connecting to database", logbuch.Fields{"err": err})
-		return nil
+		return nil, nil
 	}
 
 	if err := conn.Ping(); err != nil {
 		logbuch.Fatal("Error pinging database", logbuch.Fields{"err": err})
-		return nil
+		return nil, nil
 	}
 
 	store = pirsch.NewPostgresStore(conn)
-	tracker := pirsch.NewTracker(store, os.Getenv("MB_TRACKING_SALT"), nil)
+	tracker := pirsch.NewTracker(store, os.Getenv("MB_TRACKING_SALT"), &pirsch.TrackerConfig{
+		// I don't care about traffic from my own website
+		RefererDomainBlacklist:                   []string{domain},
+		RefererDomainBlacklistIncludesSubdomains: true,
+	})
 	analyzer = pirsch.NewAnalyzer(store)
-	processor := pirsch.NewProcessor(store)
+	processor := pirsch.NewProcessor(store, nil)
 	processTrackingData(processor)
-	pirsch.RunAtMidnight(func() {
+	cancel := pirsch.RunAtMidnight(func() {
 		processTrackingData(processor)
 	})
-	return tracker
+	return tracker, cancel
 }
 
 func processTrackingData(processor *pirsch.Processor) {
