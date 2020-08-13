@@ -78,19 +78,19 @@ func GetLanguages(startDate, endDate time.Time) []pirsch.VisitorLanguage {
 	return languages
 }
 
-func GetReferer(startDate, endDate time.Time) []pirsch.VisitorReferer {
-	referer, err := analyzer.Referer(&pirsch.Filter{From: startDate, To: endDate})
+func GetReferrer(startDate, endDate time.Time) []pirsch.VisitorReferrer {
+	referrer, err := analyzer.Referrer(&pirsch.Filter{From: startDate, To: endDate})
 
 	if err != nil {
-		logbuch.Error("Error reading referer statistics", logbuch.Fields{"err": err})
+		logbuch.Error("Error reading referrer statistics", logbuch.Fields{"err": err})
 		return nil
 	}
 
-	if len(referer) > 10 {
-		return referer[:10]
+	if len(referrer) > 10 {
+		return referrer[:10]
 	}
 
-	return referer
+	return referrer
 }
 
 func GetHourlyVisitors(startDate, endDate time.Time) (template.JS, template.JS) {

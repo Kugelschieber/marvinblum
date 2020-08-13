@@ -41,7 +41,9 @@
         <tbody>
             {{range $data := .ActiveVisitorPages}}
                 <tr>
-                    <td>{{$data.Path}}</td>
+                    <td class="break-line-anywhere">
+                        <a href="{{$data.Path}}" target="_blank">{{$data.Path}}</a>
+                    </td>
                     <td>{{$data.Visitors}}</td>
                 </tr>
             {{end}}
@@ -74,7 +76,9 @@
         <tbody>
             {{range $data := .Pages}}
                 <tr>
-                    <td>{{$data.Path}}</td>
+                    <td class="break-line-anywhere">
+                        <a href="{{$data.Path}}" target="_blank">{{$data.Path}}</a>
+                    </td>
                     <td>{{$data.Visitors}}</td>
                 </tr>
             {{end}}
@@ -106,21 +110,27 @@
     </table>
 </section>
 <section>
-    <h2>Referer</h2>
+    <h2>Referrer</h2>
     <p>
-        Here are the top 10 referer.
+        Here are the top 10 referrer.
     </p>
     <table>
         <thead>
             <tr>
-                <th>Referer</th>
+                <th>Referrer</th>
                 <th>Visitors</th>
             </tr>
         </thead>
         <tbody>
-            {{range $data := .Referer}}
+            {{range $data := .Referrer}}
                 <tr>
-                    <td>{{if $data.Referer}}{{$data.Referer}}{{else}}(unknown){{end}}</td>
+                    <td class="break-line-anywhere">
+                        {{if $data.Referrer}}
+                            <a href="{{$data.Referrer}}" target="_blank">{{$data.Referrer}}</a>
+                        {{else}}
+                            (unknown)
+                        {{end}}
+                    </td>
                     <td>{{$data.Visitors}}</td>
                 </tr>
             {{end}}

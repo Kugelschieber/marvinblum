@@ -88,6 +88,10 @@ body {
     margin: 10px 0 0 0;
 }
 
+.break-line-anywhere {
+    line-break: anywhere;
+}
+
 input {
     padding: 2px;
 }
