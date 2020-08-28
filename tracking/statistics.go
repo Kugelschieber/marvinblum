@@ -41,14 +41,14 @@ func GetPageVisits(startDate, endDate time.Time) []PageVisits {
 	pageVisits := make([]PageVisits, len(visits))
 
 	for i, visit := range visits {
-		labels, data := getLabelsAndData(visit.Visits)
-		pageVisits[i] = PageVisits{visit.Path, labels, data}
+		labels, data := getLabelsAndData(visit.VisitorsPerDay)
+		pageVisits[i] = PageVisits{visit.Path.String, labels, data}
 	}
 
 	return pageVisits
 }
 
-func GetPages(startDate, endDate time.Time) []pirsch.VisitorPage {
+func GetPages(startDate, endDate time.Time) []pirsch.Stats {
 	pages, err := analyzer.Pages(&pirsch.Filter{From: startDate, To: endDate})
 
 	if err != nil {
@@ -63,7 +63,7 @@ func GetPages(startDate, endDate time.Time) []pirsch.VisitorPage {
 	return pages
 }
 
-func GetLanguages(startDate, endDate time.Time) []pirsch.VisitorLanguage {
+func GetLanguages(startDate, endDate time.Time) []pirsch.Stats {
 	languages, _, err := analyzer.Languages(&pirsch.Filter{From: startDate, To: endDate})
 
 	if err != nil {
@@ -78,7 +78,7 @@ func GetLanguages(startDate, endDate time.Time) []pirsch.VisitorLanguage {
 	return languages
 }
 
-func GetReferrer(startDate, endDate time.Time) []pirsch.VisitorReferrer {
+func GetReferrer(startDate, endDate time.Time) []pirsch.Stats {
 	referrer, err := analyzer.Referrer(&pirsch.Filter{From: startDate, To: endDate})
 
 	if err != nil {
@@ -126,7 +126,7 @@ func GetActiveVisitors() int {
 	return visitors
 }
 
-func GetActiveVisitorPages() []pirsch.PageVisitors {
+func GetActiveVisitorPages() []pirsch.Stats {
 	pages, err := analyzer.ActiveVisitorsPages(pirsch.NullTenant, time.Second*30)
 
 	if err != nil {
@@ -151,7 +151,7 @@ func getLabelsAndData(visitors []pirsch.VisitorsPerDay) (template.JS, template.J
 	return template.JS(labelsStr[:len(labelsStr)-1]), template.JS(dataStr[:len(dataStr)-1])
 }
 
-func getLabelsAndDataHourly(visitors []pirsch.HourlyVisitors) (template.JS, template.JS) {
+func getLabelsAndDataHourly(visitors []pirsch.Stats) (template.JS, template.JS) {
 	var labels strings.Builder
 	var dp strings.Builder
 
