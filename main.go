@@ -157,6 +157,9 @@ func serveTracking() http.HandlerFunc {
 			Pages                     []pirsch.Stats
 			Languages                 []pirsch.Stats
 			Referrer                  []pirsch.Stats
+			Browser                   []pirsch.Stats
+			OS                        []pirsch.Stats
+			Platform                  *pirsch.Stats
 			HourlyVisitorsLabels      template.JS
 			HourlyVisitorsDps         template.JS
 			HourlyVisitorsTodayLabels template.JS
@@ -173,6 +176,9 @@ func serveTracking() http.HandlerFunc {
 			tracking.GetPages(startDate, endDate),
 			tracking.GetLanguages(startDate, endDate),
 			tracking.GetReferrer(startDate, endDate),
+			tracking.GetBrowser(startDate, endDate),
+			tracking.GetOS(startDate, endDate),
+			tracking.GetPlatform(startDate, endDate),
 			hourlyVisitorsLabels,
 			hourlyVisitorsDps,
 			hourlyVisitorsTodayLabels,

@@ -138,6 +138,73 @@
     </table>
 </section>
 <section>
+    <h2>Browser</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Browser</th>
+            <th>Visitors</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{range $data := .Browser}}
+            <tr>
+                <td>{{if $data.Browser.Valid}}{{$data.Browser.String}}{{else}}(unknown){{end}}</td>
+                <td>{{$data.Visitors}}</td>
+            </tr>
+        {{end}}
+        </tbody>
+    </table>
+</section>
+<section>
+    <h2>Operating System</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>OS</th>
+            <th>Visitors</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{range $data := .OS}}
+            <tr>
+                <td>{{if $data.OS.Valid}}{{$data.OS.String}}{{else}}(unknown){{end}}</td>
+                <td>{{$data.Visitors}}</td>
+            </tr>
+        {{end}}
+        </tbody>
+    </table>
+</section>
+<section>
+    <h2>Platform</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Platform</th>
+            <th>Absolute</th>
+            <th>Relative</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Desktop</td>
+                <td>{{.Platform.PlatformDesktopVisitors}}</td>
+                <td>{{round (multiply .Platform.PlatformDesktopRelative 100)}} %</td>
+            </tr>
+            <tr>
+                <td>Mobile</td>
+                <td>{{.Platform.PlatformMobileVisitors}}</td>
+                <td>{{round (multiply .Platform.PlatformMobileRelative 100)}} %</td>
+            </tr>
+            <tr>
+                <td>(unknown)</td>
+                <td>{{.Platform.PlatformUnknownVisitors}}</td>
+                <td>{{round (multiply .Platform.PlatformUnknownRelative 100)}} %</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+<section>
     <h2>Page Visits</h2>
 </section>
 

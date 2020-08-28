@@ -93,6 +93,39 @@ func GetReferrer(startDate, endDate time.Time) []pirsch.Stats {
 	return referrer
 }
 
+func GetOS(startDate, endDate time.Time) []pirsch.Stats {
+	os, err := analyzer.OS(&pirsch.Filter{From: startDate, To: endDate})
+
+	if err != nil {
+		logbuch.Error("Error reading OS statistics", logbuch.Fields{"err": err})
+		return nil
+	}
+
+	return os
+}
+
+func GetBrowser(startDate, endDate time.Time) []pirsch.Stats {
+	browser, err := analyzer.Browser(&pirsch.Filter{From: startDate, To: endDate})
+
+	if err != nil {
+		logbuch.Error("Error reading browser statistics", logbuch.Fields{"err": err})
+		return nil
+	}
+
+	return browser
+}
+
+func GetPlatform(startDate, endDate time.Time) *pirsch.Stats {
+	platform, err := analyzer.Platform(&pirsch.Filter{From: startDate, To: endDate})
+
+	if err != nil {
+		logbuch.Error("Error reading platform statistics", logbuch.Fields{"err": err})
+		return nil
+	}
+
+	return platform
+}
+
 func GetHourlyVisitors(startDate, endDate time.Time) (template.JS, template.JS) {
 	visitors, err := analyzer.HourlyVisitors(&pirsch.Filter{From: startDate, To: endDate})
 
