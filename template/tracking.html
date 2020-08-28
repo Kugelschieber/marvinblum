@@ -101,7 +101,7 @@
         <tbody>
             {{range $data := .Languages}}
                 <tr>
-                    <td>{{if $data.Language.Valid}}{{$data.Language.String}}{{else}}(not set){{end}}</td>
+                    <td>{{if $data.Language.String}}{{$data.Language.String}}{{else}}(not set){{end}}</td>
                     <td>{{$data.Visitors}}</td>
                     <td>{{round (multiply $data.RelativeVisitors 100)}} %</td>
                 </tr>
@@ -125,7 +125,7 @@
             {{range $data := .Referrer}}
                 <tr>
                     <td class="break-line-anywhere">
-                        {{if $data.Referrer.Valid}}
+                        {{if $data.Referrer.String}}
                             <a href="{{$data.Referrer.String}}" target="_blank">{{$data.Referrer.String}}</a>
                         {{else}}
                             (unknown)
@@ -150,7 +150,7 @@
         <tbody>
         {{range $data := .Browser}}
             <tr>
-                <td>{{if $data.Browser.Valid}}{{$data.Browser.String}}{{else}}(unknown){{end}}</td>
+                <td>{{if $data.Browser.String}}{{$data.Browser.String}}{{else}}(unknown){{end}}</td>
                 <td>{{$data.Visitors}}</td>
                 <td>{{round (multiply $data.RelativeVisitors 100)}} %</td>
             </tr>
@@ -171,7 +171,7 @@
         <tbody>
         {{range $data := .OS}}
             <tr>
-                <td>{{if $data.OS.Valid}}{{$data.OS.String}}{{else}}(unknown){{end}}</td>
+                <td>{{if $data.OS.String}}{{$data.OS.String}}{{else}}(unknown){{end}}</td>
                 <td>{{$data.Visitors}}</td>
                 <td>{{round (multiply $data.RelativeVisitors 100)}} %</td>
             </tr>
