@@ -143,7 +143,8 @@
         <thead>
         <tr>
             <th>Browser</th>
-            <th>Visitors</th>
+            <th>Absolute</th>
+            <th>Relative</th>
         </tr>
         </thead>
         <tbody>
@@ -151,6 +152,7 @@
             <tr>
                 <td>{{if $data.Browser.Valid}}{{$data.Browser.String}}{{else}}(unknown){{end}}</td>
                 <td>{{$data.Visitors}}</td>
+                <td>{{round (multiply $data.RelativeVisitors 100)}} %</td>
             </tr>
         {{end}}
         </tbody>
@@ -162,7 +164,8 @@
         <thead>
         <tr>
             <th>OS</th>
-            <th>Visitors</th>
+            <th>Absolute</th>
+            <th>Relative</th>
         </tr>
         </thead>
         <tbody>
@@ -170,6 +173,7 @@
             <tr>
                 <td>{{if $data.OS.Valid}}{{$data.OS.String}}{{else}}(unknown){{end}}</td>
                 <td>{{$data.Visitors}}</td>
+                <td>{{round (multiply $data.RelativeVisitors 100)}} %</td>
             </tr>
         {{end}}
         </tbody>
@@ -177,6 +181,9 @@
 </section>
 <section>
     <h2>Platform</h2>
+    <canvas id="platform" class="tracking"></canvas>
+</section>
+<section>
     <table>
         <thead>
         <tr>
@@ -252,6 +259,21 @@
                 borderColor: "#7f7f7f",
                 label: "Hourly Visitors",
                 data: [{{.HourlyVisitorsDps}}]
+            }]
+        }
+    });
+
+    new Chart(document.getElementById('platform').getContext('2d'), {
+        type: "doughnut",
+        data: {
+            labels: ["Desktop", "Mobile", "(unknown)"],
+            datasets: [{
+                backgroundColor: ["#515151", "#7f7f7f", "#dbdbdb"],
+                borderColor: ["#515151", "#7f7f7f", "#dbdbdb"],
+                data: [
+                    {{round (multiply .Platform.PlatformDesktopRelative 100)}},
+                    {{round (multiply .Platform.PlatformMobileRelative 100)}},
+                    {{round (multiply .Platform.PlatformUnknownRelative 100)}}]
             }]
         }
     });
