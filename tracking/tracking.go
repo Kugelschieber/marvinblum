@@ -48,7 +48,7 @@ func NewTracker() (*pirsch.Tracker, context.CancelFunc) {
 		return nil, nil
 	}
 
-	store = pirsch.NewPostgresStore(conn)
+	store = pirsch.NewPostgresStore(conn, nil)
 	tracker := pirsch.NewTracker(store, os.Getenv("MB_TRACKING_SALT"), &pirsch.TrackerConfig{
 		// I don't care about traffic from my own website
 		ReferrerDomainBlacklist:                   []string{domain},
