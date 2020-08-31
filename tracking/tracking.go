@@ -59,6 +59,7 @@ func NewTracker() (*pirsch.Tracker, context.CancelFunc) {
 	cancel := pirsch.RunAtMidnight(func() {
 		processTrackingData(processor)
 	})
+	processTrackingData(processor) // run on startup
 	return tracker, cancel
 }
 
