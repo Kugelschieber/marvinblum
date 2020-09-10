@@ -144,33 +144,33 @@ func serveTracking() http.HandlerFunc {
 			endDate = time.Now().UTC()
 		}
 
-		totalVisitorsLabels, totalVisitorsDps := tracking.GetTotalVisitors(startDate, endDate)
-		hourlyVisitorsLabels, hourlyVisitorsDps := tracking.GetHourlyVisitors(startDate, endDate)
-		hourlyVisitorsTodayLabels, hourlyVisitorsTodayDps := tracking.GetHourlyVisitorsToday()
+		//totalVisitorsLabels, totalVisitorsDps := tracking.GetTotalVisitors(startDate, endDate)
+		//hourlyVisitorsLabels, hourlyVisitorsDps := tracking.GetHourlyVisitors(startDate, endDate)
+		//hourlyVisitorsTodayLabels, hourlyVisitorsTodayDps := tracking.GetHourlyVisitorsToday()
 		tplCache.RenderWithoutCache(w, "tracking.html", struct {
-			Start                     int
-			StartDate                 time.Time
-			EndDate                   time.Time
-			TotalVisitorsLabels       template.JS
-			TotalVisitorsDps          template.JS
-			PageVisits                []tracking.PageVisits
-			Pages                     []pirsch.Stats
-			Languages                 []pirsch.Stats
-			Referrer                  []pirsch.Stats
-			Browser                   []pirsch.Stats
-			OS                        []pirsch.Stats
-			Platform                  *pirsch.Stats
-			HourlyVisitorsLabels      template.JS
-			HourlyVisitorsDps         template.JS
-			HourlyVisitorsTodayLabels template.JS
-			HourlyVisitorsTodayDps    template.JS
-			ActiveVisitors            int
-			ActiveVisitorPages        []pirsch.Stats
+			Start     int
+			StartDate time.Time
+			EndDate   time.Time
+			//TotalVisitorsLabels       template.JS
+			//TotalVisitorsDps          template.JS
+			//PageVisits                []tracking.PageVisits
+			//Pages                     []pirsch.Stats
+			//Languages                 []pirsch.Stats
+			//Referrer                  []pirsch.Stats
+			//Browser                   []pirsch.Stats
+			//OS                        []pirsch.Stats
+			//Platform                  *pirsch.Stats
+			//HourlyVisitorsLabels      template.JS
+			//HourlyVisitorsDps         template.JS
+			//HourlyVisitorsTodayLabels template.JS
+			//HourlyVisitorsTodayDps    template.JS
+			//ActiveVisitors            int
+			//ActiveVisitorPages        []pirsch.Stats
 		}{
 			start,
 			startDate,
 			endDate,
-			totalVisitorsLabels,
+			/*totalVisitorsLabels,
 			totalVisitorsDps,
 			tracking.GetPageVisits(startDate, endDate),
 			tracking.GetPages(startDate, endDate),
@@ -184,7 +184,7 @@ func serveTracking() http.HandlerFunc {
 			hourlyVisitorsTodayLabels,
 			hourlyVisitorsTodayDps,
 			tracking.GetActiveVisitors(),
-			tracking.GetActiveVisitorPages(),
+			tracking.GetActiveVisitorPages(),*/
 		})
 	}
 }

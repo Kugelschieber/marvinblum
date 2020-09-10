@@ -1,11 +1,7 @@
 package tracking
 
 import (
-	"fmt"
-	"github.com/emvi/logbuch"
-	"github.com/emvi/pirsch"
 	"html/template"
-	"strings"
 	"time"
 )
 
@@ -19,7 +15,7 @@ type PageVisits struct {
 	Data   template.JS
 }
 
-func GetTotalVisitors(startDate, endDate time.Time) (template.JS, template.JS) {
+/*func GetTotalVisitors(startDate, endDate time.Time) (template.JS, template.JS) {
 	visitors, err := analyzer.Visitors(&pirsch.Filter{From: startDate, To: endDate})
 
 	if err != nil {
@@ -31,7 +27,7 @@ func GetTotalVisitors(startDate, endDate time.Time) (template.JS, template.JS) {
 }
 
 func GetPageVisits(startDate, endDate time.Time) []PageVisits {
-	visits, err := analyzer.PageVisits(&pirsch.Filter{From: startDate, To: endDate})
+	visits, err := analyzer.PageVisitors(&pirsch.Filter{From: startDate, To: endDate})
 
 	if err != nil {
 		logbuch.Error("Error reading page statistics", logbuch.Fields{"err": err})
@@ -126,17 +122,6 @@ func GetPlatform(startDate, endDate time.Time) *pirsch.Stats {
 	return platform
 }
 
-func GetHourlyVisitors(startDate, endDate time.Time) (template.JS, template.JS) {
-	visitors, err := analyzer.HourlyVisitors(&pirsch.Filter{From: startDate, To: endDate})
-
-	if err != nil {
-		logbuch.Error("Error reading hourly visitors", logbuch.Fields{"err": err})
-		return "", ""
-	}
-
-	return getLabelsAndDataHourly(visitors)
-}
-
 func GetHourlyVisitorsToday() (template.JS, template.JS) {
 	visitors, err := analyzer.HourlyVisitors(&pirsch.Filter{From: today(), To: today()})
 
@@ -196,7 +181,7 @@ func getLabelsAndDataHourly(visitors []pirsch.Stats) (template.JS, template.JS) 
 	labelsStr := labels.String()
 	dataStr := dp.String()
 	return template.JS(labelsStr[:len(labelsStr)-1]), template.JS(dataStr[:len(dataStr)-1])
-}
+}*/
 
 func today() time.Time {
 	now := time.Now()
