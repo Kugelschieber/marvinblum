@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/Kugelschieber/marvinblum.de/blog"
+	"github.com/Kugelschieber/marvinblum.de/db"
 	"github.com/Kugelschieber/marvinblum.de/tpl"
 	"github.com/Kugelschieber/marvinblum.de/tracking"
 	"github.com/NYTimes/gziphandler"
@@ -34,29 +35,6 @@ var (
 	tplCache     *tpl.Cache
 	blogInstance *blog.Blog
 )
-
-func configureLog() {
-	logbuch.SetFormatter(logbuch.NewFieldFormatter(logTimeFormat, "\t\t"))
-	logbuch.Info("Configure logging...")
-	level := strings.ToLower(os.Getenv("MB_LOGLEVEL"))
-
-	if level == "debug" {
-		logbuch.SetLevel(logbuch.LevelDebug)
-	} else if level == "info" {
-		logbuch.SetLevel(logbuch.LevelInfo)
-	} else {
-		logbuch.SetLevel(logbuch.LevelWarning)
-	}
-}
-
-func logEnvConfig() {
-	for _, e := range os.Environ() {
-		if strings.HasPrefix(e, envPrefix) {
-			pair := strings.Split(e, "=")
-			logbuch.Info(pair[0] + "=" + pair[1])
-		}
-	}
-}
 
 func serveAbout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -207,6 +185,29 @@ func setupRouter() *mux.Router {
 	return router
 }
 
+func configureLog() {
+	logbuch.SetFormatter(logbuch.NewFieldFormatter(logTimeFormat, "\t\t"))
+	logbuch.Info("Configure logging...")
+	level := strings.ToLower(os.Getenv("MB_LOGLEVEL"))
+
+	if level == "debug" {
+		logbuch.SetLevel(logbuch.LevelDebug)
+	} else if level == "info" {
+		logbuch.SetLevel(logbuch.LevelInfo)
+	} else {
+		logbuch.SetLevel(logbuch.LevelWarning)
+	}
+}
+
+func logEnvConfig() {
+	for _, e := range os.Environ() {
+		if strings.HasPrefix(e, envPrefix) {
+			pair := strings.Split(e, "=")
+			logbuch.Info(pair[0] + "=" + pair[1])
+		}
+	}
+}
+
 func configureCors(router *mux.Router) http.Handler {
 	logbuch.Info("Configuring CORS...")
 
@@ -251,6 +252,7 @@ func start(handler http.Handler, trackingCancel context.CancelFunc) {
 func main() {
 	configureLog()
 	logEnvConfig()
+	db.Migrate()
 	var trackingCancel context.CancelFunc
 	tracker, trackingCancel = tracking.NewTracker()
 	tplCache = tpl.NewCache()
