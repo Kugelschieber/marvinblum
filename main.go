@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/Kugelschieber/marvinblum.de/blog"
+	"github.com/Kugelschieber/marvinblum.de/db"
 	"github.com/Kugelschieber/marvinblum.de/tpl"
 	"github.com/Kugelschieber/marvinblum.de/tracking"
 	"github.com/NYTimes/gziphandler"
@@ -34,29 +35,6 @@ var (
 	tplCache     *tpl.Cache
 	blogInstance *blog.Blog
 )
-
-func configureLog() {
-	logbuch.SetFormatter(logbuch.NewFieldFormatter(logTimeFormat, "\t\t"))
-	logbuch.Info("Configure logging...")
-	level := strings.ToLower(os.Getenv("MB_LOGLEVEL"))
-
-	if level == "debug" {
-		logbuch.SetLevel(logbuch.LevelDebug)
-	} else if level == "info" {
-		logbuch.SetLevel(logbuch.LevelInfo)
-	} else {
-		logbuch.SetLevel(logbuch.LevelWarning)
-	}
-}
-
-func logEnvConfig() {
-	for _, e := range os.Environ() {
-		if strings.HasPrefix(e, envPrefix) {
-			pair := strings.Split(e, "=")
-			logbuch.Info(pair[0] + "=" + pair[1])
-		}
-	}
-}
 
 func serveAbout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -144,24 +122,23 @@ func serveTracking() http.HandlerFunc {
 			endDate = time.Now().UTC()
 		}
 
+		activeVisitorPages, activeVisitors := tracking.GetActiveVisitors()
 		totalVisitorsLabels, totalVisitorsDps := tracking.GetTotalVisitors(startDate, endDate)
-		hourlyVisitorsLabels, hourlyVisitorsDps := tracking.GetHourlyVisitors(startDate, endDate)
 		hourlyVisitorsTodayLabels, hourlyVisitorsTodayDps := tracking.GetHourlyVisitorsToday()
+		pageVisitors, pageRank := tracking.GetPageVisits(startDate, endDate)
 		tplCache.RenderWithoutCache(w, "tracking.html", struct {
 			Start                     int
 			StartDate                 time.Time
 			EndDate                   time.Time
 			TotalVisitorsLabels       template.JS
 			TotalVisitorsDps          template.JS
-			PageVisits                []tracking.PageVisits
-			Pages                     []pirsch.Stats
-			Languages                 []pirsch.Stats
-			Referrer                  []pirsch.Stats
-			Browser                   []pirsch.Stats
-			OS                        []pirsch.Stats
-			Platform                  *pirsch.Stats
-			HourlyVisitorsLabels      template.JS
-			HourlyVisitorsDps         template.JS
+			PageVisitors              []tracking.PageVisitors
+			PageRank                  []tracking.PageVisitors
+			Languages                 []pirsch.LanguageStats
+			Referrer                  []pirsch.ReferrerStats
+			Browser                   []pirsch.BrowserStats
+			OS                        []pirsch.OSStats
+			Platform                  *pirsch.VisitorStats
 			HourlyVisitorsTodayLabels template.JS
 			HourlyVisitorsTodayDps    template.JS
 			ActiveVisitors            int
@@ -172,19 +149,17 @@ func serveTracking() http.HandlerFunc {
 			endDate,
 			totalVisitorsLabels,
 			totalVisitorsDps,
-			tracking.GetPageVisits(startDate, endDate),
-			tracking.GetPages(startDate, endDate),
+			pageVisitors,
+			pageRank,
 			tracking.GetLanguages(startDate, endDate),
 			tracking.GetReferrer(startDate, endDate),
 			tracking.GetBrowser(startDate, endDate),
 			tracking.GetOS(startDate, endDate),
 			tracking.GetPlatform(startDate, endDate),
-			hourlyVisitorsLabels,
-			hourlyVisitorsDps,
 			hourlyVisitorsTodayLabels,
 			hourlyVisitorsTodayDps,
-			tracking.GetActiveVisitors(),
-			tracking.GetActiveVisitorPages(),
+			activeVisitors,
+			activeVisitorPages,
 		})
 	}
 }
@@ -205,6 +180,29 @@ func setupRouter() *mux.Router {
 	router.Handle("/", serveAbout())
 	router.NotFoundHandler = serveNotFound()
 	return router
+}
+
+func configureLog() {
+	logbuch.SetFormatter(logbuch.NewFieldFormatter(logTimeFormat, "\t\t"))
+	logbuch.Info("Configure logging...")
+	level := strings.ToLower(os.Getenv("MB_LOGLEVEL"))
+
+	if level == "debug" {
+		logbuch.SetLevel(logbuch.LevelDebug)
+	} else if level == "info" {
+		logbuch.SetLevel(logbuch.LevelInfo)
+	} else {
+		logbuch.SetLevel(logbuch.LevelWarning)
+	}
+}
+
+func logEnvConfig() {
+	for _, e := range os.Environ() {
+		if strings.HasPrefix(e, envPrefix) {
+			pair := strings.Split(e, "=")
+			logbuch.Info(pair[0] + "=" + pair[1])
+		}
+	}
 }
 
 func configureCors(router *mux.Router) http.Handler {
@@ -251,6 +249,7 @@ func start(handler http.Handler, trackingCancel context.CancelFunc) {
 func main() {
 	configureLog()
 	logEnvConfig()
+	db.Migrate()
 	var trackingCancel context.CancelFunc
 	tracker, trackingCancel = tracking.NewTracker()
 	tplCache = tpl.NewCache()

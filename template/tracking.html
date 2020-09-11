@@ -22,7 +22,7 @@
 <section>
     <h2>Active Visitors</h2>
     <p>
-        Active visitors within the last five minutes: {{.ActiveVisitors}}
+        Active visitors within the last ten minutes: {{.ActiveVisitors}}
     </p>
     <p>
         The next diagram shows active visitors for each hour of today.
@@ -42,7 +42,7 @@
             {{range $data := .ActiveVisitorPages}}
                 <tr>
                     <td class="break-line-anywhere">
-                        <a href="{{$data.Path.String}}" target="_blank">{{$data.Path.String}}</a>
+                        <a href="{{$data.Path}}" target="_blank">{{$data.Path}}</a>
                     </td>
                     <td>{{$data.Visitors}}</td>
                 </tr>
@@ -53,13 +53,6 @@
 <section>
     <h2>Total Visitors</h2>
     <canvas id="totalVisitors" class="tracking"></canvas>
-</section>
-<section>
-    <h2>Visitors Per Hour</h2>
-    <p>
-        This is the cumulated visitor count per hour on each day of the selected time frame.
-    </p>
-    <canvas id="hourlyVisitors" class="tracking"></canvas>
 </section>
 <section>
     <h2>Pages</h2>
@@ -74,10 +67,10 @@
             </tr>
         </thead>
         <tbody>
-            {{range $data := .Pages}}
+            {{range $data := .PageRank}}
                 <tr>
                     <td class="break-line-anywhere">
-                        <a href="{{$data.Path.String}}" target="_blank">{{$data.Path.String}}</a>
+                        <a href="{{$data.Path}}" target="_blank">{{$data.Path}}</a>
                     </td>
                     <td>{{$data.Visitors}}</td>
                 </tr>
@@ -195,18 +188,18 @@
         <tbody>
             <tr>
                 <td>Desktop</td>
-                <td>{{.Platform.PlatformDesktopVisitors}}</td>
-                <td>{{round (multiply .Platform.PlatformDesktopRelative 100)}} %</td>
+                <td>{{.Platform.PlatformDesktop}}</td>
+                <td>{{round (multiply .Platform.RelativePlatformDesktop 100)}} %</td>
             </tr>
             <tr>
                 <td>Mobile</td>
-                <td>{{.Platform.PlatformMobileVisitors}}</td>
-                <td>{{round (multiply .Platform.PlatformMobileRelative 100)}} %</td>
+                <td>{{.Platform.PlatformMobile}}</td>
+                <td>{{round (multiply .Platform.RelativePlatformMobile 100)}} %</td>
             </tr>
             <tr>
                 <td>(unknown)</td>
-                <td>{{.Platform.PlatformUnknownVisitors}}</td>
-                <td>{{round (multiply .Platform.PlatformUnknownRelative 100)}} %</td>
+                <td>{{.Platform.PlatformUnknown}}</td>
+                <td>{{round (multiply .Platform.RelativePlatformUnknown 100)}} %</td>
             </tr>
         </tbody>
     </table>
@@ -215,7 +208,7 @@
     <h2>Page Visits</h2>
 </section>
 
-{{range $i, $data := .PageVisits}}
+{{range $i, $data := .PageVisitors}}
     <section>
         <h3>{{$data.Path}}</h3>
         <canvas id="pageVisits{{$i}}" class="tracking"></canvas>
@@ -250,19 +243,6 @@
         }
     });
 
-    new Chart(document.getElementById('hourlyVisitors').getContext('2d'), {
-        type: "bar",
-        data: {
-            labels: [{{.HourlyVisitorsLabels}}],
-            datasets: [{
-                backgroundColor: "#7f7f7f",
-                borderColor: "#7f7f7f",
-                label: "Hourly Visitors",
-                data: [{{.HourlyVisitorsDps}}]
-            }]
-        }
-    });
-
     new Chart(document.getElementById('platform').getContext('2d'), {
         type: "doughnut",
         data: {
@@ -271,14 +251,14 @@
                 backgroundColor: ["#515151", "#7f7f7f", "#dbdbdb"],
                 borderColor: ["#515151", "#7f7f7f", "#dbdbdb"],
                 data: [
-                    {{round (multiply .Platform.PlatformDesktopRelative 100)}},
-                    {{round (multiply .Platform.PlatformMobileRelative 100)}},
-                    {{round (multiply .Platform.PlatformUnknownRelative 100)}}]
+                    {{round (multiply .Platform.RelativePlatformDesktop 100)}},
+                    {{round (multiply .Platform.RelativePlatformMobile 100)}},
+                    {{round (multiply .Platform.RelativePlatformUnknown 100)}}]
             }]
         }
     });
 
-    {{range $i, $data := .PageVisits}}
+    {{range $i, $data := .PageVisitors}}
         new Chart(document.getElementById('pageVisits{{$i}}').getContext('2d'), {
             type: "line",
             data: {
