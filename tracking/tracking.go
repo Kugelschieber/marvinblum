@@ -9,10 +9,6 @@ import (
 	"os"
 )
 
-const (
-	domain = "marvinblum.de"
-)
-
 var (
 	store    pirsch.Store
 	analyzer *pirsch.Analyzer
@@ -35,7 +31,7 @@ func NewTracker() (*pirsch.Tracker, context.CancelFunc) {
 	store = pirsch.NewPostgresStore(conn, nil)
 	tracker := pirsch.NewTracker(store, os.Getenv("MB_TRACKING_SALT"), &pirsch.TrackerConfig{
 		// I don't care about traffic from my own website
-		ReferrerDomainBlacklist:                   []string{domain},
+		ReferrerDomainBlacklist:                   []string{"marvinblum.de"},
 		ReferrerDomainBlacklistIncludesSubdomains: true,
 	})
 	analyzer = pirsch.NewAnalyzer(store)
