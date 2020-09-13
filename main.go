@@ -123,7 +123,7 @@ func serveTracking() http.HandlerFunc {
 		}
 
 		activeVisitorPages, activeVisitors := tracking.GetActiveVisitors()
-		totalVisitorsLabels, totalVisitorsDps := tracking.GetTotalVisitors(startDate, endDate)
+		totalVisitorsLabels, totalVisitorsDps, sessionsDps, bouncesDps := tracking.GetTotalVisitors(startDate, endDate)
 		hourlyVisitorsTodayLabels, hourlyVisitorsTodayDps := tracking.GetHourlyVisitorsToday()
 		pageVisitors, pageRank := tracking.GetPageVisits(startDate, endDate)
 		tplCache.RenderWithoutCache(w, "tracking.html", struct {
@@ -132,6 +132,8 @@ func serveTracking() http.HandlerFunc {
 			EndDate                   time.Time
 			TotalVisitorsLabels       template.JS
 			TotalVisitorsDps          template.JS
+			SessionsDps               template.JS
+			BouncesDps                template.JS
 			PageVisitors              []tracking.PageVisitors
 			PageRank                  []tracking.PageVisitors
 			Languages                 []pirsch.LanguageStats
@@ -149,6 +151,8 @@ func serveTracking() http.HandlerFunc {
 			endDate,
 			totalVisitorsLabels,
 			totalVisitorsDps,
+			sessionsDps,
+			bouncesDps,
 			pageVisitors,
 			pageRank,
 			tracking.GetLanguages(startDate, endDate),

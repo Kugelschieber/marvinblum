@@ -234,12 +234,26 @@
         type: "line",
         data: {
             labels: [{{.TotalVisitorsLabels}}],
-            datasets: [{
-                backgroundColor: "rgba(127, 127, 127, 0.05)",
-                borderColor: "#7f7f7f",
-                label: "Total Visitors",
-                data: [{{.TotalVisitorsDps}}]
-            }]
+            datasets: [
+                {
+                    backgroundColor: "rgb(43, 180, 0, 0.02)",
+                    borderColor: "#289800",
+                    label: "Total Visitors",
+                    data: [{{.TotalVisitorsDps}}]
+                },
+                {
+                    backgroundColor: "rgb(0, 63, 197, 0.02)",
+                    borderColor: "#00359f",
+                    label: "Sessions",
+                    data: [{{.SessionsDps}}]
+                },
+                {
+                    backgroundColor: "rgba(194, 0, 0, 0.02)",
+                    borderColor: "#980000",
+                    label: "Bounces",
+                    data: [{{.BouncesDps}}]
+                }
+            ]
         }
     });
 
@@ -263,12 +277,26 @@
             type: "line",
             data: {
                 labels: [{{$data.Labels}}],
-                datasets: [{
-                    backgroundColor: "rgba(127, 127, 127, 0.05)",
-                    borderColor: "#7f7f7f",
-                    label: "Page Visits",
-                    data: [{{$data.Data}}]
-                }]
+                datasets: [
+                    {
+                        backgroundColor: "rgb(43, 180, 0, 0.02)",
+                        borderColor: "#289800",
+                        label: "Page Visits",
+                        data: [{{$data.Data}}]
+                    },
+                    {
+                        backgroundColor: "rgb(0, 63, 197, 0.02)",
+                        borderColor: "#00359f",
+                        label: "Sessions",
+                        data: [{{$data.Sessions}}]
+                    },
+                    {
+                        backgroundColor: "rgba(194, 0, 0, 0.02)",
+                        borderColor: "#980000",
+                        label: "Bounces",
+                        data: [{{$data.Bounces}}]
+                    }
+                ]
             }
         });
     {{end}}
