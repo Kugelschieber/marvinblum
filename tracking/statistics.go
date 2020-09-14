@@ -168,11 +168,11 @@ func getLabelsAndData(visitors []pirsch.Stats) (template.JS, template.JS, templa
 	labelsStr := labels.String()
 	dataStr := dp.String()
 	sessionsStr := sessions.String()
-	bouncesStr := sessions.String()
+	bouncesStr := bounces.String()
 	return template.JS(labelsStr[:len(labelsStr)-1]),
 		template.JS(dataStr[:len(dataStr)-1]),
 		template.JS(sessionsStr[:len(sessionsStr)-1]),
-		template.JS(bouncesStr[:len(sessionsStr)-1])
+		template.JS(bouncesStr[:len(bouncesStr)-1])
 }
 
 func getLabelsAndDataHourly(visitors []pirsch.VisitorTimeStats) (template.JS, template.JS) {

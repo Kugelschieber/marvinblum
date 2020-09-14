@@ -7,7 +7,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emvi/api-go v0.2.2
 	github.com/emvi/logbuch v1.1.1
-	github.com/emvi/pirsch v1.5.2
+	github.com/emvi/pirsch v1.5.3-0.20200914194223-a990d20e91a2
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/golang-migrate/migrate/v4 v4.12.2
