@@ -30,9 +30,9 @@ func NewTracker() (*pirsch.Tracker, context.CancelFunc) {
 
 	store = pirsch.NewPostgresStore(conn, nil)
 	tracker := pirsch.NewTracker(store, os.Getenv("MB_TRACKING_SALT"), &pirsch.TrackerConfig{
-		// I don't care about traffic from my own website
-		ReferrerDomainBlacklist:                   []string{"marvinblum.de"},
+		ReferrerDomainBlacklist:                   []string{"marvinblum.de"}, // I don't care about traffic from my own website
 		ReferrerDomainBlacklistIncludesSubdomains: true,
+		Sessions: true,
 	})
 	analyzer = pirsch.NewAnalyzer(store)
 	processor := pirsch.NewProcessor(store)
