@@ -19,6 +19,8 @@ type PageVisitors struct {
 	Visitors int
 	Labels   template.JS
 	Data     template.JS
+	Sessions template.JS
+	Bounces  template.JS
 }
 
 func GetActiveVisitors() ([]pirsch.Stats, int) {
@@ -43,12 +45,12 @@ func GetHourlyVisitorsToday() (template.JS, template.JS) {
 	return getLabelsAndDataHourly(visitors)
 }
 
-func GetTotalVisitors(startDate, endDate time.Time) (template.JS, template.JS) {
+func GetTotalVisitors(startDate, endDate time.Time) (template.JS, template.JS, template.JS, template.JS) {
 	visitors, err := analyzer.Visitors(&pirsch.Filter{From: startDate, To: endDate})
 
 	if err != nil {
 		logbuch.Error("Error reading visitor statistics", logbuch.Fields{"err": err})
-		return "", ""
+		return "", "", "", ""
 	}
 
 	return getLabelsAndData(visitors)
@@ -65,12 +67,14 @@ func GetPageVisits(startDate, endDate time.Time) ([]PageVisitors, []PageVisitors
 	pageVisitors := make([]PageVisitors, len(visits))
 
 	for i, visit := range visits {
-		labels, data := getLabelsAndData(visit.Stats)
+		labels, data, sessions, bounces := getLabelsAndData(visit.Stats)
 		pageVisitors[i] = PageVisitors{
 			Path:     visit.Path,
 			Visitors: sumVisitors(visit.Stats),
 			Labels:   labels,
 			Data:     data,
+			Sessions: sessions,
+			Bounces:  bounces,
 		}
 	}
 
@@ -148,18 +152,27 @@ func sumVisitors(stats []pirsch.Stats) int {
 	return sum
 }
 
-func getLabelsAndData(visitors []pirsch.Stats) (template.JS, template.JS) {
+func getLabelsAndData(visitors []pirsch.Stats) (template.JS, template.JS, template.JS, template.JS) {
 	var labels strings.Builder
 	var dp strings.Builder
+	var sessions strings.Builder
+	var bounces strings.Builder
 
 	for _, point := range visitors {
 		labels.WriteString(fmt.Sprintf("'%s',", point.Day.Format(statisticsDateFormat)))
 		dp.WriteString(fmt.Sprintf("%d,", point.Visitors))
+		sessions.WriteString(fmt.Sprintf("%d,", point.Sessions))
+		bounces.WriteString(fmt.Sprintf("%d,", point.Bounces))
 	}
 
 	labelsStr := labels.String()
 	dataStr := dp.String()
-	return template.JS(labelsStr[:len(labelsStr)-1]), template.JS(dataStr[:len(dataStr)-1])
+	sessionsStr := sessions.String()
+	bouncesStr := bounces.String()
+	return template.JS(labelsStr[:len(labelsStr)-1]),
+		template.JS(dataStr[:len(dataStr)-1]),
+		template.JS(sessionsStr[:len(sessionsStr)-1]),
+		template.JS(bouncesStr[:len(bouncesStr)-1])
 }
 
 func getLabelsAndDataHourly(visitors []pirsch.VisitorTimeStats) (template.JS, template.JS) {
