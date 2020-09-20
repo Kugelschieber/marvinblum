@@ -7,6 +7,11 @@ import (
 	"github.com/emvi/logbuch"
 	"github.com/emvi/pirsch"
 	"os"
+	"path/filepath"
+)
+
+const (
+	geodbPath = "geodb"
 )
 
 var (
@@ -38,8 +43,10 @@ func NewTracker() (*pirsch.Tracker, context.CancelFunc) {
 	processor := pirsch.NewProcessor(store)
 	cancel := pirsch.RunAtMidnight(func() {
 		processTrackingData(processor)
+		updateGeoDB(tracker)
 	})
-	processTrackingData(processor) // run on startup
+	processTrackingData(processor)
+	updateGeoDB(tracker)
 	return tracker, cancel
 }
 
@@ -57,4 +64,27 @@ func processTrackingData(processor *pirsch.Processor) {
 	} else {
 		logbuch.Info("Done processing tracking data")
 	}
+}
+
+func updateGeoDB(tracker *pirsch.Tracker) {
+	licenseKey := os.Getenv("MB_GEOLITE2_LICENSE_KEY")
+
+	if licenseKey == "" {
+		return
+	}
+
+	if err := pirsch.GetGeoLite2(geodbPath, licenseKey); err != nil {
+		logbuch.Error("Error loading GeoLite2", logbuch.Fields{"err": err})
+		return
+	}
+
+	geodb, err := pirsch.NewGeoDB(filepath.Join(geodbPath, pirsch.GeoLite2Filename))
+
+	if err != nil {
+		logbuch.Error("Error creating GeoDB", logbuch.Fields{"err": err})
+		return
+	}
+
+	tracker.SetGeoDB(geodb)
+	logbuch.Info("GeoDB updated")
 }

@@ -173,6 +173,27 @@
     </table>
 </section>
 <section>
+    <h2>Countries</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Country</th>
+            <th>Absolute</th>
+            <th>Relative</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{range $data := .Countries}}
+            <tr>
+                <td>{{if $data.CountryCode.String}}{{$data.CountryCode.String}}{{else}}(unknown){{end}}</td>
+                <td>{{$data.Visitors}}</td>
+                <td>{{round (multiply $data.RelativeVisitors 100)}} %</td>
+            </tr>
+        {{end}}
+        </tbody>
+    </table>
+</section>
+<section>
     <h2>Platform</h2>
     <canvas id="platform" class="tracking"></canvas>
 </section>

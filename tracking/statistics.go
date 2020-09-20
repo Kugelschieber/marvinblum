@@ -138,6 +138,21 @@ func GetBrowser(startDate, endDate time.Time) []pirsch.BrowserStats {
 	return browser
 }
 
+func GetCountry(startDate, endDate time.Time) []pirsch.CountryStats {
+	countries, err := analyzer.Country(&pirsch.Filter{From: startDate, To: endDate})
+
+	if err != nil {
+		logbuch.Error("Error reading country statistics", logbuch.Fields{"err": err})
+		return nil
+	}
+
+	for i := range countries {
+		countries[i].CountryCode.String = strings.ToUpper(countries[i].CountryCode.String)
+	}
+
+	return countries
+}
+
 func GetPlatform(startDate, endDate time.Time) *pirsch.VisitorStats {
 	return analyzer.Platform(&pirsch.Filter{From: startDate, To: endDate})
 }
