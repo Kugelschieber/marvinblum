@@ -39,7 +39,7 @@ func NewTracker() (*pirsch.Tracker, context.CancelFunc) {
 		ReferrerDomainBlacklistIncludesSubdomains: true,
 		Sessions: true,
 	})
-	analyzer = pirsch.NewAnalyzer(store)
+	analyzer = pirsch.NewAnalyzer(store, nil)
 	processor := pirsch.NewProcessor(store)
 	cancel := pirsch.RunAtMidnight(func() {
 		processTrackingData(processor)
