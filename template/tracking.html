@@ -134,20 +134,20 @@
     <h2>Browser</h2>
     <table>
         <thead>
-        <tr>
-            <th>Browser</th>
-            <th>Absolute</th>
-            <th>Relative</th>
-        </tr>
+            <tr>
+                <th>Browser</th>
+                <th>Absolute</th>
+                <th>Relative</th>
+            </tr>
         </thead>
         <tbody>
-        {{range $data := .Browser}}
-            <tr>
-                <td>{{if $data.Browser.String}}{{$data.Browser.String}}{{else}}(unknown){{end}}</td>
-                <td>{{$data.Visitors}}</td>
-                <td>{{round (multiply $data.RelativeVisitors 100)}} %</td>
-            </tr>
-        {{end}}
+            {{range $data := .Browser}}
+                <tr>
+                    <td>{{if $data.Browser.String}}{{$data.Browser.String}}{{else}}(unknown){{end}}</td>
+                    <td>{{$data.Visitors}}</td>
+                    <td>{{round (multiply $data.RelativeVisitors 100)}} %</td>
+                </tr>
+            {{end}}
         </tbody>
     </table>
 </section>
@@ -155,20 +155,20 @@
     <h2>Operating System</h2>
     <table>
         <thead>
-        <tr>
-            <th>OS</th>
-            <th>Absolute</th>
-            <th>Relative</th>
-        </tr>
+            <tr>
+                <th>OS</th>
+                <th>Absolute</th>
+                <th>Relative</th>
+            </tr>
         </thead>
         <tbody>
-        {{range $data := .OS}}
-            <tr>
-                <td>{{if $data.OS.String}}{{$data.OS.String}}{{else}}(unknown){{end}}</td>
-                <td>{{$data.Visitors}}</td>
-                <td>{{round (multiply $data.RelativeVisitors 100)}} %</td>
-            </tr>
-        {{end}}
+            {{range $data := .OS}}
+                <tr>
+                    <td>{{if $data.OS.String}}{{$data.OS.String}}{{else}}(unknown){{end}}</td>
+                    <td>{{$data.Visitors}}</td>
+                    <td>{{round (multiply $data.RelativeVisitors 100)}} %</td>
+                </tr>
+            {{end}}
         </tbody>
     </table>
 </section>
@@ -176,20 +176,20 @@
     <h2>Countries</h2>
     <table>
         <thead>
-        <tr>
-            <th>Country</th>
-            <th>Absolute</th>
-            <th>Relative</th>
-        </tr>
+            <tr>
+                <th>Country</th>
+                <th>Absolute</th>
+                <th>Relative</th>
+            </tr>
         </thead>
         <tbody>
-        {{range $data := .Countries}}
-            <tr>
-                <td>{{if $data.CountryCode.String}}{{$data.CountryCode.String}}{{else}}(unknown){{end}}</td>
-                <td>{{$data.Visitors}}</td>
-                <td>{{round (multiply $data.RelativeVisitors 100)}} %</td>
-            </tr>
-        {{end}}
+            {{range $data := .Countries}}
+                <tr>
+                    <td>{{if $data.CountryCode.String}}{{$data.CountryCode.String}}{{else}}(unknown){{end}}</td>
+                    <td>{{$data.Visitors}}</td>
+                    <td>{{round (multiply $data.RelativeVisitors 100)}} %</td>
+                </tr>
+            {{end}}
         </tbody>
     </table>
 </section>
@@ -200,11 +200,11 @@
 <section>
     <table>
         <thead>
-        <tr>
-            <th>Platform</th>
-            <th>Absolute</th>
-            <th>Relative</th>
-        </tr>
+            <tr>
+                <th>Platform</th>
+                <th>Absolute</th>
+                <th>Relative</th>
+            </tr>
         </thead>
         <tbody>
             <tr>
@@ -222,6 +222,30 @@
                 <td>{{.Platform.PlatformUnknown}}</td>
                 <td>{{round (multiply .Platform.RelativePlatformUnknown 100)}} %</td>
             </tr>
+        </tbody>
+    </table>
+</section>
+<section>
+    <h2>Time of Day</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Time</th>
+                {{range $day := .TimeOfDay}}
+                    <th>{{format $day.Day "Mon 01/02"}}</th>
+                {{end}}
+            </tr>
+        </thead>
+        <tbody>
+            {{$global := .}}
+            {{range $i := (intRange 0 24)}}
+                <tr>
+                    <td>{{$i}}</td>
+                    {{range $j, $day := $global.TimeOfDay}}
+                        <td>{{(index (index $global.TimeOfDay $j).Stats $i).Visitors}}</td>
+                    {{end}}
+                </tr>
+            {{end}}
         </tbody>
     </table>
 </section>

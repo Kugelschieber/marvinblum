@@ -142,6 +142,7 @@ func serveTracking() http.HandlerFunc {
 			OS                        []pirsch.OSStats
 			Countries                 []pirsch.CountryStats
 			Platform                  *pirsch.VisitorStats
+			TimeOfDay                 []pirsch.TimeOfDayVisitors
 			HourlyVisitorsTodayLabels template.JS
 			HourlyVisitorsTodayDps    template.JS
 			ActiveVisitors            int
@@ -162,6 +163,7 @@ func serveTracking() http.HandlerFunc {
 			tracking.GetOS(startDate, endDate),
 			tracking.GetCountry(startDate, endDate),
 			tracking.GetPlatform(startDate, endDate),
+			tracking.GetVisitorTimeOfDay(startDate, endDate),
 			hourlyVisitorsTodayLabels,
 			hourlyVisitorsTodayDps,
 			activeVisitors,

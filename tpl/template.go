@@ -40,6 +40,7 @@ func (cache *Cache) load() {
 		"format":   func(t time.Time, layout string) string { return t.Format(layout) },
 		"multiply": func(f, x float64) float64 { return f * x },
 		"round":    func(f float64) string { return fmt.Sprintf("%.2f", f) },
+		"intRange": intRange,
 	}
 	var err error
 	cache.tpl, err = template.New("").Funcs(funcMap).ParseGlob(templateDir)
@@ -99,4 +100,18 @@ func (cache *Cache) Clear() {
 	cache.m.Lock()
 	defer cache.m.Unlock()
 	cache.cache = make(map[string][]byte)
+}
+
+func intRange(start, end int) []int {
+	if end-start < 0 {
+		return []int{}
+	}
+
+	r := make([]int, end-start)
+
+	for i := 0; i < end-start; i++ {
+		r[i] = start + i
+	}
+
+	return r
 }
