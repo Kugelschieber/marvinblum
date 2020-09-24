@@ -158,6 +158,12 @@ func GetPlatform(startDate, endDate time.Time) *pirsch.VisitorStats {
 }
 
 func GetVisitorTimeOfDay(startDate, endDate time.Time) []pirsch.TimeOfDayVisitors {
+	max := startDate.Add(time.Hour * 24 * 7)
+
+	if endDate.After(max) {
+		endDate = max
+	}
+
 	visitors, err := analyzer.TimeOfDay(&pirsch.Filter{From: startDate, To: endDate})
 
 	if err != nil {
