@@ -150,6 +150,10 @@ func GetCountry(startDate, endDate time.Time) []pirsch.CountryStats {
 		countries[i].CountryCode.String = strings.ToUpper(countries[i].CountryCode.String)
 	}
 
+	if len(countries) > 10 {
+		return countries[:10]
+	}
+
 	return countries
 }
 
