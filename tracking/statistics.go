@@ -161,7 +161,7 @@ func GetPlatform(startDate, endDate time.Time) *pirsch.VisitorStats {
 	return analyzer.Platform(&pirsch.Filter{From: startDate, To: endDate})
 }
 
-func GetVisitorTimeOfDay(startDate, endDate time.Time) []pirsch.TimeOfDayVisitors {
+func GetVisitorTimeOfDay(startDate, endDate time.Time) ([]pirsch.TimeOfDayVisitors, int) {
 	min := endDate.Add(-time.Hour * 24 * 7)
 
 	if startDate.Before(min) {
@@ -172,10 +172,20 @@ func GetVisitorTimeOfDay(startDate, endDate time.Time) []pirsch.TimeOfDayVisitor
 
 	if err != nil {
 		logbuch.Error("Error reading visitor time of day statistics", logbuch.Fields{"err": err})
-		return nil
+		return nil, 0
 	}
 
-	return visitors
+	maxVisitors := 0
+
+	for _, v := range visitors {
+		for _, s := range v.Stats {
+			if maxVisitors < s.Visitors {
+				maxVisitors = s.Visitors
+			}
+		}
+	}
+
+	return visitors, maxVisitors
 }
 
 func sumVisitors(stats []pirsch.Stats) int {

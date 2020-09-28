@@ -242,7 +242,10 @@
                 <tr>
                     <td>{{$i}}</td>
                     {{range $j, $day := $global.TimeOfDay}}
-                        <td>{{(index (index $global.TimeOfDay $j).Stats $i).Visitors}}</td>
+                        {{$visitors := float64 (index (index $global.TimeOfDay $j).Stats $i).Visitors}}
+                        <td style="background: rgba(81, 81, 81, {{divide $visitors $global.TimeOfDayMax}});color: #fff;text-align: center;">
+                            {{$visitors}}
+                        </td>
                     {{end}}
                 </tr>
             {{end}}

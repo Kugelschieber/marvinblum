@@ -126,6 +126,7 @@ func serveTracking() http.HandlerFunc {
 		totalVisitorsLabels, totalVisitorsDps, sessionsDps, bouncesDps := tracking.GetTotalVisitors(startDate, endDate)
 		hourlyVisitorsTodayLabels, hourlyVisitorsTodayDps := tracking.GetHourlyVisitorsToday()
 		pageVisitors, pageRank := tracking.GetPageVisits(startDate, endDate)
+		timeOfDay, timeOfDayMax := tracking.GetVisitorTimeOfDay(startDate, endDate)
 		tplCache.RenderWithoutCache(w, "tracking.html", struct {
 			Start                     int
 			StartDate                 time.Time
@@ -143,6 +144,7 @@ func serveTracking() http.HandlerFunc {
 			Countries                 []pirsch.CountryStats
 			Platform                  *pirsch.VisitorStats
 			TimeOfDay                 []pirsch.TimeOfDayVisitors
+			TimeOfDayMax              float64
 			HourlyVisitorsTodayLabels template.JS
 			HourlyVisitorsTodayDps    template.JS
 			ActiveVisitors            int
@@ -163,7 +165,8 @@ func serveTracking() http.HandlerFunc {
 			tracking.GetOS(startDate, endDate),
 			tracking.GetCountry(startDate, endDate),
 			tracking.GetPlatform(startDate, endDate),
-			tracking.GetVisitorTimeOfDay(startDate, endDate),
+			timeOfDay,
+			float64(timeOfDayMax),
 			hourlyVisitorsTodayLabels,
 			hourlyVisitorsTodayDps,
 			activeVisitors,

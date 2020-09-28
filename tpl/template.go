@@ -38,9 +38,11 @@ func (cache *Cache) load() {
 	funcMap := template.FuncMap{
 		"slug":     slug.Make,
 		"format":   func(t time.Time, layout string) string { return t.Format(layout) },
-		"multiply": func(f, x float64) float64 { return f * x },
+		"multiply": func(a, b float64) float64 { return a * b },
+		"divide":   func(a, b float64) float64 { return a / b },
 		"round":    func(f float64) string { return fmt.Sprintf("%.2f", f) },
 		"intRange": intRange,
+		"float64":  func(i int) float64 { return float64(i) },
 	}
 	var err error
 	cache.tpl, err = template.New("").Funcs(funcMap).ParseGlob(templateDir)
