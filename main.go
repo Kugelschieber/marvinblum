@@ -38,7 +38,7 @@ var (
 
 func serveAbout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tracker.Hit(r, nil)
+		go tracker.Hit(r, nil)
 		tplCache.Render(w, "about.html", struct {
 			Articles []emvi.Article
 		}{
@@ -49,14 +49,14 @@ func serveAbout() http.HandlerFunc {
 
 func serveLegal() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tracker.Hit(r, nil)
+		go tracker.Hit(r, nil)
 		tplCache.Render(w, "legal.html", nil)
 	}
 }
 
 func serveBlogPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tracker.Hit(r, nil)
+		go tracker.Hit(r, nil)
 		tplCache.Render(w, "blog.html", struct {
 			Articles map[int][]emvi.Article
 		}{
@@ -83,7 +83,7 @@ func serveBlogArticle() http.HandlerFunc {
 		}
 
 		// track the hit if the article was found, otherwise we don't care
-		tracker.Hit(r, nil)
+		go tracker.Hit(r, nil)
 
 		tplCache.RenderWithoutCache(w, "article.html", struct {
 			Title     string
@@ -99,7 +99,7 @@ func serveBlogArticle() http.HandlerFunc {
 
 func serveTracking() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tracker.Hit(r, nil)
+		go tracker.Hit(r, nil)
 		start, _ := strconv.Atoi(r.URL.Query().Get("start"))
 
 		if start > 365 {
