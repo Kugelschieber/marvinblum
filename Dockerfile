@@ -1,6 +1,6 @@
 FROM golang AS build
-COPY . /go/src/github.com/Kugelschieber/marvinblum.de
-WORKDIR /go/src/github.com/Kugelschieber/marvinblum.de
+COPY . /go/src/github.com/Kugelschieber/marvinblum
+WORKDIR /go/src/github.com/Kugelschieber/marvinblum
 RUN apt-get update && apt-get upgrade -y
 
 ENV GOPATH=/go
@@ -13,7 +13,7 @@ RUN apk update && \
     apk add --no-cache && \
     apk add ca-certificates && \
     rm -rf /var/cache/apk/*
-COPY --from=build /go/src/github.com/Kugelschieber/marvinblum.de /app
+COPY --from=build /go/src/github.com/Kugelschieber/marvinblum /app
 WORKDIR /app
 
 # default config

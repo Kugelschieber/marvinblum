@@ -3,9 +3,9 @@ package tracking
 import (
 	"context"
 	"database/sql"
-	"github.com/Kugelschieber/marvinblum.de/db"
+	"github.com/Kugelschieber/marvinblum/db"
 	"github.com/emvi/logbuch"
-	"github.com/emvi/pirsch"
+	"github.com/pirsch-analytics/pirsch"
 	"os"
 	"path/filepath"
 )

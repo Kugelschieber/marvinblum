@@ -2,7 +2,7 @@ package blog
 
 import (
 	"fmt"
-	"github.com/Kugelschieber/marvinblum.de/tpl"
+	"github.com/Kugelschieber/marvinblum/tpl"
 	emvi "github.com/emvi/api-go"
 	"github.com/emvi/logbuch"
 	"io/ioutil"

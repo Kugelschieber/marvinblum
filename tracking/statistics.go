@@ -3,7 +3,7 @@ package tracking
 import (
 	"fmt"
 	"github.com/emvi/logbuch"
-	"github.com/emvi/pirsch"
+	"github.com/pirsch-analytics/pirsch"
 	"html/template"
 	"sort"
 	"strings"
