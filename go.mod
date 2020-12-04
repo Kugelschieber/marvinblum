@@ -10,9 +10,9 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/gosimple/slug v1.9.0
 	github.com/hashicorp/errwrap v1.1.0 // indirect
-	github.com/lib/pq v1.8.0
+	github.com/lib/pq v1.9.0
 	github.com/pirsch-analytics/pirsch v1.8.1
-	github.com/pirsch-analytics/pirsch-go-sdk v0.0.0-20201204224029-0ab7a9417d40 // indirect
+	github.com/pirsch-analytics/pirsch-go-sdk v0.0.0-20201204224029-0ab7a9417d40
 	github.com/rs/cors v1.7.0
 	golang.org/x/sys v0.0.0-20201116194326-cc9327a14d48 // indirect
 )
