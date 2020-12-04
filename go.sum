@@ -226,6 +226,8 @@ github.com/oschwald/maxminddb-golang v1.7.0/go.mod h1:RXZtst0N6+FY/3qCNmZMBApR19
 github.com/pierrec/lz4 v2.0.5+incompatible/go.mod h1:pdkljMzZIN41W+lC3N2tnIh5sFi+IEE17M5jbnwPHcY=
 github.com/pirsch-analytics/pirsch v1.8.1 h1:07pFslS6gSTgGcu26camKeYhJ5G+KCwnqc6GGVRHcPU=
 github.com/pirsch-analytics/pirsch v1.8.1/go.mod h1:BPOASgFDyfVyXCXrrDvS5kVgc/eN2fM5cZAVj0fZGbI=
+github.com/pirsch-analytics/pirsch-go-sdk v0.0.0-20201204224029-0ab7a9417d40 h1:wBNO4NcuRc8GL95QiewUkhIspx9wKg8qzwqBKHbMB44=
+github.com/pirsch-analytics/pirsch-go-sdk v0.0.0-20201204224029-0ab7a9417d40/go.mod h1:PF2vnJw8FYcXQe6OTPQQcGn8l/agkpl7T4YO9d2aPSE=
 github.com/pkg/browser v0.0.0-20180916011732-0a3d74bf9ce4/go.mod h1:4OwLy04Bl9Ef3GJJCoec+30X3LQs/0/m4HFRt/2LUSA=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=

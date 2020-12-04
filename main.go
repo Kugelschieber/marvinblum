@@ -3,21 +3,18 @@ package main
 import (
 	"context"
 	"github.com/Kugelschieber/marvinblum/blog"
-	"github.com/Kugelschieber/marvinblum/db"
 	"github.com/Kugelschieber/marvinblum/tpl"
-	"github.com/Kugelschieber/marvinblum/tracking"
 	"github.com/NYTimes/gziphandler"
 	emvi "github.com/emvi/api-go"
 	"github.com/emvi/logbuch"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
-	"github.com/pirsch-analytics/pirsch"
+	"github.com/pirsch-analytics/pirsch-go-sdk"
 	"github.com/rs/cors"
 	"html/template"
 	"net/http"
 	"os"
 	"os/signal"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -31,14 +28,14 @@ const (
 )
 
 var (
-	tracker      *pirsch.Tracker
+	client       *pirsch.Client
 	tplCache     *tpl.Cache
 	blogInstance *blog.Blog
 )
 
 func serveAbout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		go tracker.Hit(r, nil)
+		go hit(r)
 		tplCache.Render(w, "about.html", struct {
 			Articles []emvi.Article
 		}{
@@ -49,14 +46,14 @@ func serveAbout() http.HandlerFunc {
 
 func serveLegal() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		go tracker.Hit(r, nil)
+		go hit(r)
 		tplCache.Render(w, "legal.html", nil)
 	}
 }
 
 func serveBlogPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		go tracker.Hit(r, nil)
+		go hit(r)
 		tplCache.Render(w, "blog.html", struct {
 			Articles map[int][]emvi.Article
 		}{
@@ -83,7 +80,7 @@ func serveBlogArticle() http.HandlerFunc {
 		}
 
 		// track the hit if the article was found, otherwise we don't care
-		go tracker.Hit(r, nil)
+		go hit(r)
 
 		tplCache.RenderWithoutCache(w, "article.html", struct {
 			Title     string
@@ -99,79 +96,7 @@ func serveBlogArticle() http.HandlerFunc {
 
 func serveTracking() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		go tracker.Hit(r, nil)
-		start, _ := strconv.Atoi(r.URL.Query().Get("start"))
-
-		if start > 365 {
-			start = 365
-		} else if start < 7 {
-			start = 7
-		}
-
-		var startDate, endDate time.Time
-
-		if err := r.ParseForm(); err != nil {
-			logbuch.Warn("Error parsing tracking form", logbuch.Fields{"err": err})
-		} else {
-			startDate, _ = time.Parse("2006-01-02", r.FormValue("start-date"))
-			endDate, _ = time.Parse("2006-01-02", r.FormValue("end-date"))
-		}
-
-		if startDate.IsZero() || endDate.IsZero() {
-			startDate = time.Now().UTC().Add(-time.Hour * 24 * time.Duration(start))
-			endDate = time.Now().UTC()
-		}
-
-		activeVisitorPages, activeVisitors := tracking.GetActiveVisitors()
-		totalVisitorsLabels, totalVisitorsDps, sessionsDps, bouncesDps := tracking.GetTotalVisitors(startDate, endDate)
-		hourlyVisitorsTodayLabels, hourlyVisitorsTodayDps := tracking.GetHourlyVisitorsToday()
-		pageVisitors, pageRank := tracking.GetPageVisits(startDate, endDate)
-		timeOfDay, timeOfDayMax := tracking.GetVisitorTimeOfDay(startDate, endDate)
-		tplCache.RenderWithoutCache(w, "tracking.html", struct {
-			Start                     int
-			StartDate                 time.Time
-			EndDate                   time.Time
-			TotalVisitorsLabels       template.JS
-			TotalVisitorsDps          template.JS
-			SessionsDps               template.JS
-			BouncesDps                template.JS
-			PageVisitors              []tracking.PageVisitors
-			PageRank                  []tracking.PageVisitors
-			Languages                 []pirsch.LanguageStats
-			Referrer                  []pirsch.ReferrerStats
-			Browser                   []pirsch.BrowserStats
-			OS                        []pirsch.OSStats
-			Countries                 []pirsch.CountryStats
-			Platform                  *pirsch.VisitorStats
-			TimeOfDay                 []pirsch.TimeOfDayVisitors
-			TimeOfDayMax              float64
-			HourlyVisitorsTodayLabels template.JS
-			HourlyVisitorsTodayDps    template.JS
-			ActiveVisitors            int
-			ActiveVisitorPages        []pirsch.Stats
-		}{
-			start,
-			startDate,
-			endDate,
-			totalVisitorsLabels,
-			totalVisitorsDps,
-			sessionsDps,
-			bouncesDps,
-			pageVisitors,
-			pageRank,
-			tracking.GetLanguages(startDate, endDate),
-			tracking.GetReferrer(startDate, endDate),
-			tracking.GetBrowser(startDate, endDate),
-			tracking.GetOS(startDate, endDate),
-			tracking.GetCountry(startDate, endDate),
-			tracking.GetPlatform(startDate, endDate),
-			timeOfDay,
-			float64(timeOfDayMax),
-			hourlyVisitorsTodayLabels,
-			hourlyVisitorsTodayDps,
-			activeVisitors,
-			activeVisitorPages,
-		})
+		http.Redirect(w, r, "https://marvinblum.pirsch.io/", http.StatusFound)
 	}
 }
 
@@ -230,7 +155,7 @@ func configureCors(router *mux.Router) http.Handler {
 	return c.Handler(router)
 }
 
-func start(handler http.Handler, trackingCancel context.CancelFunc) {
+func start(handler http.Handler) {
 	logbuch.Info("Starting server...")
 	var server http.Server
 	server.Handler = handler
@@ -241,8 +166,6 @@ func start(handler http.Handler, trackingCancel context.CancelFunc) {
 		signal.Notify(sigint, os.Interrupt)
 		<-sigint
 		logbuch.Info("Shutting down server...")
-		trackingCancel()
-		tracker.Stop()
 		ctx, _ := context.WithTimeout(context.Background(), shutdownTimeout)
 
 		if err := server.Shutdown(ctx); err != nil {
@@ -257,15 +180,22 @@ func start(handler http.Handler, trackingCancel context.CancelFunc) {
 	logbuch.Info("Server shut down")
 }
 
+func hit(r *http.Request) {
+	if err := client.Hit(r); err != nil {
+		logbuch.Warn("Error sending page hit to pirsch", logbuch.Fields{"err": err})
+	}
+}
+
 func main() {
 	configureLog()
 	logEnvConfig()
-	db.Migrate()
-	var trackingCancel context.CancelFunc
-	tracker, trackingCancel = tracking.NewTracker()
+	client = pirsch.NewClient(os.Getenv("MB_PIRSCH_CLIENT_ID"),
+		os.Getenv("MB_PIRSCH_CLIENT_SECRET"),
+		os.Getenv("MB_PIRSCH_HOSTNAME"),
+		nil)
 	tplCache = tpl.NewCache()
 	blogInstance = blog.NewBlog(tplCache)
 	router := setupRouter()
 	corsConfig := configureCors(router)
-	start(corsConfig, trackingCancel)
+	start(corsConfig)
 }

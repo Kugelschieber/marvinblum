@@ -52,7 +52,8 @@ services:
     environment:
       MB_EMVI_CLIENT_ID: 3fBBn144yvSF9R3dPC8l
       MB_EMVI_ORGA: marvin
-      MB_DB_HOST: postgres
+      export MB_PIRSCH_CLIENT_ID: gEb3pvgxZvZzFRlOTdMgPtyLvNYgeVKe
+      export MB_PIRSCH_HOSTNAME: marvinblum.de
     labels:
       - "traefik.enable=true"
       - "traefik.port=8888"
