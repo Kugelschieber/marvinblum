@@ -42,10 +42,6 @@ html, body {
     color: var(--dark-gray);
 }
 
-body {
-    padding: 128px;
-}
-
 h1 {
     font-size: 60px;
     line-height: 78px;
@@ -121,6 +117,7 @@ small {
 
 .content {
     max-width: 640px;
+    margin: 128px;
 }
 
 .footer {
@@ -168,4 +165,25 @@ small {
 .back-to-homepage img {
     width: 8px;
     height: 16px;
+}
+
+.cv {
+    display: flex;
+    gap: 32px;
+    margin: 0 0 16px 0;
+}
+
+.cv div:first-child {
+    width: 128px;
+    color: var(--light-gray);
+}
+
+.fullpage-img {
+    position: fixed;
+    right: 0;
+    left: 896px;
+    top: 0;
+    bottom: 0;
+    overflow: hidden;
+    display: flex;
 }
