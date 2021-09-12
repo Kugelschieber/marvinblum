@@ -1,6 +1,7 @@
 :root {
     --dark-gray: #212121;
     --light-gray: #808080;
+    --lighter-gray: rgb(238, 238, 238);
 }
 
 @font-face {
@@ -73,6 +74,33 @@ p {
     padding: 0;
 }
 
+ul {
+    list-style-type: circle;
+    margin: 0 0 28px 0;
+    padding: 0 0 0 32px;
+}
+
+li {
+    font-size: 18px;
+    line-height: 28px;
+}
+
+pre, code {
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 18px;
+    background: var(--lighter-gray);
+    padding: 2px;
+    border-radius: 2px;
+}
+
+pre {
+    margin: 0 0 28px 0;
+    padding: 24px;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
 button, .button {
     width: 192px;
     height: 54px;
@@ -113,6 +141,10 @@ small {
     font-size: 14px;
     line-height: 18px;
     color: var(--light-gray);
+}
+
+article a {
+    text-decoration: underline;
 }
 
 .content {
@@ -186,4 +218,13 @@ small {
     bottom: 0;
     overflow: hidden;
     display: flex;
+    align-content: center;
+    justify-content: center;
+}
+
+.date {
+    font-size: 14px;
+    line-height: 18px;
+    color: var(--light-gray);
+    margin: 0 0 24px 0;
 }
