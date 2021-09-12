@@ -54,6 +54,14 @@ h1 {
     padding: 0;
 }
 
+h2 {
+    font-weight: bold;
+    font-size: 32px;
+    line-height: 42px;
+    margin: 0 0 16px 0;
+    padding: 0;
+}
+
 h2.name {
     font-size: 18px;
     line-height: 28px;
@@ -69,7 +77,7 @@ p {
     padding: 0;
 }
 
-button {
+button, .button {
     width: 192px;
     height: 54px;
     color: #fff;
@@ -85,11 +93,24 @@ button {
     margin: 64px 0;
     padding: 0;
     cursor: pointer;
+    transition: opacity 0.1s linear;
+}
+
+button:hover, .button:hover {
+    color: #fff;
+    opacity: 0.9;
+    transition: opacity 0.1s linear;
 }
 
 a {
     text-decoration: none;
     color: var(--dark-gray);
+    transition: color 0.1s linear;
+}
+
+a:hover {
+    color: var(--light-gray);
+    transition: color 0.1s linear;
 }
 
 small {
@@ -107,6 +128,7 @@ small {
     border-width: 1px 0 0 0;
     border-style: solid;
     border-color: var(--light-gray);
+    margin: 64px 0 0 0;
     padding: 32px 0 0 0;
 }
 
@@ -119,4 +141,31 @@ small {
     gap: 16px;
     grid-auto-flow: column;
     margin: 0 0 32px 0;
+}
+
+.footer-icons img {
+    transition: opacity 0.1s linear;
+}
+
+.footer-icons img:hover {
+    opacity: 0.9;
+    transition: opacity 0.1s linear;
+}
+
+.back-to-homepage {
+    display: inline-flex;
+    gap: 8px;
+    font-size: 14px;
+    line-height: 18px;
+    color: var(--light-gray);
+    margin: 0 0 16px 0;
+}
+
+.back-to-homepage:hover {
+    color: var(--dark-gray);
+}
+
+.back-to-homepage img {
+    width: 8px;
+    height: 16px;
 }
