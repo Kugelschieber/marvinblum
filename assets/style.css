@@ -1,0 +1,122 @@
+:root {
+    --dark-gray: #212121;
+    --light-gray: #808080;
+}
+
+@font-face {
+    font-family: "DM Sans";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/assets/font/DMSans-Regular.ttf");
+}
+
+@font-face {
+    font-family: "DM Sans";
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/assets/font/DMSans-Italic.ttf");
+}
+
+@font-face {
+    font-family: "DM Sans";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("/assets/font/DMSans-Bold.ttf");
+}
+
+@font-face {
+    font-family: "DM Sans";
+    font-style: italic;
+    font-weight: bold;
+    font-display: 700;
+    src: url("/assets/font/DMSans-BoldItalic.ttf");
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: "DM Sans", sans-serif;
+    color: var(--dark-gray);
+}
+
+body {
+    padding: 128px;
+}
+
+h1 {
+    font-size: 60px;
+    line-height: 78px;
+    font-weight: bold;
+    margin: 0 0 32px 0;
+    padding: 0;
+}
+
+h2.name {
+    font-size: 18px;
+    line-height: 28px;
+    font-weight: normal;
+    margin: 0 0 16px 0;
+    padding: 0;
+}
+
+p {
+    font-size: 18px;
+    line-height: 28px;
+    margin: 0 0 28px 0;
+    padding: 0;
+}
+
+button {
+    width: 192px;
+    height: 54px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 22px;
+    line-height: 29px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--dark-gray);
+    border-width: 0;
+    border-radius: 8px;
+    margin: 64px 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+a {
+    text-decoration: none;
+    color: var(--dark-gray);
+}
+
+small {
+    font-size: 14px;
+    line-height: 18px;
+    color: var(--light-gray);
+}
+
+.content {
+    max-width: 640px;
+}
+
+.footer {
+    max-width: 540px;
+    border-width: 1px 0 0 0;
+    border-style: solid;
+    border-color: var(--light-gray);
+    padding: 32px 0 0 0;
+}
+
+.footer p {
+    margin: 0 0 18px 0;
+}
+
+.footer-icons {
+    display: inline-grid;
+    gap: 16px;
+    grid-auto-flow: column;
+    margin: 0 0 32px 0;
+}
