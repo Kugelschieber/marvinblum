@@ -2,7 +2,7 @@
 
 $borderRadius: 8px;
 $textColor: #0f0f0f;
-$highlight: #d76f30;
+$highlight: #82b3db;
 
 * {
 	box-sizing: border-box;
@@ -41,9 +41,11 @@ nav {
 		border: 1px solid $highlight;
 		color: $textColor;
 		transition: all 0.3s;
+		color: $highlight;
 
 		&:hover {
 			background: $highlight;
+			color: #fff;
 		}
 	}
 }
