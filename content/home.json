@@ -1,0 +1,21 @@
+{
+    "path": {
+        "en": "/"
+    },
+    "sitemap": {
+        "priority": "1.0"
+    },
+    "content": {
+        "content": [
+            {
+                "tpl": "main",
+                "copy": {
+                    "en": {
+                        "title": "Marvin Blum - marvinblum.de",
+                        "headline": "Welcome to my website!"
+                    }
+                }
+            }
+        ]
+    }
+}

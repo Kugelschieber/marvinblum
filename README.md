@@ -1,3 +1,3 @@
 # marvinblum.de
 
-My website build using [Oogway](https://github.com/emvi/oogway).
+My [website](https://marvinblum.de) built with [Shifu](https://github.com/emvi/shifu).

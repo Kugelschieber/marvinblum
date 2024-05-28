@@ -1,0 +1,45 @@
+{
+    "dev": true,
+    "server": {
+        "host": "localhost",
+        "port": 8081,
+        "shutdown_time": 30,
+        "write_timeout": 5,
+        "read_timeout": 5,
+        "tls_cert_file": "",
+        "tls_key_file": "",
+        "hostname": "",
+        "secure_cookies": false,
+        "cookie_domain_name": ""
+    },
+    "content": {
+        "provider": "fs",
+        "update_seconds": 5,
+        "repository": ""
+    },
+    "cors": {
+        "origins": "",
+        "loglevel": ""
+    },
+    "sass": {
+        "entrypoint": "main.scss",
+        "dir": "assets/scss",
+        "watch": true,
+        "out": "static/main.css",
+        "out_source_map": "static/main.css.map"
+    },
+    "js": {
+        "entrypoint": "main.js",
+        "dir": "assets/js",
+        "watch": true,
+        "out": "static/main.min.js",
+        "source_map": true
+    },
+    "analytics": {
+        "provider": "",
+        "client_id": "",
+        "client_secret": "",
+        "subnets": null,
+        "header": null
+    }
+}
