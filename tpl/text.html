@@ -1,4 +1,5 @@
 {{$size := get .Content "size"}}
+{{$md := get .Content "markdown"}}
 
 <section>
     {{if $size}}
@@ -9,5 +10,9 @@
         <h2>{{copy .Page .Content "headline"}}</h2>
     {{end}}
 
-    {{html (copy .Page .Content "text")}}
+    {{if $md}}
+        {{markdown $md .}}
+    {{else}}
+        {{html (copy .Page .Content "text")}}
+    {{end}}
 </section>
