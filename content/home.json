@@ -7,15 +7,11 @@
     },
     "content": {
         "content": [
+            {"ref": "head"},
             {
-                "tpl": "main",
-                "copy": {
-                    "en": {
-                        "title": "Marvin Blum - marvinblum.de",
-                        "headline": "Welcome to my website!"
-                    }
-                }
-            }
+                "tpl": "intro"
+            },
+            {"ref": "end"}
         ]
     }
 }

@@ -1,0 +1,11 @@
+{
+    "tpl": "head",
+    "copy": {
+        "en": {
+            "copyright": "Marvin Blum",
+            "author": "Marvin Blum",
+            "title": "Hi, I'm Marvin.",
+            "meta_description": "Hi, I'm Marvin, co-founder of Pirsch Analytics, software engineer, and open-source enthusiast."
+        }
+    }
+}

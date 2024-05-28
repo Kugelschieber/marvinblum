@@ -1,0 +1,24 @@
+{{- $title := copy .Page .Content "title" -}}
+
+<!DOCTYPE html>
+<html lang="{{.Page.Language}}">
+<head>
+    <base href="/" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="copyright" content="{{copy .Page .Content "copyright"}}" />
+    <meta name="author" content="{{copy .Page .Content "author"}}" />
+    <meta name="title" content="{{$title}}" />
+    <meta name="description" content="{{copy .Page .Content "meta_description"}}" />
+    <link rel="canonical" href="{{.Page.CanonicalLink}}" />
+
+    {{range $language, $path := .Page.Path}}
+        <link rel="alternate" hreflang="{{if eq $language "en"}}x-default{{else}}{{$language}}{{end}}" href="{{fmt "%s%s" hostname $path}}" />
+    {{end}}
+
+    <link rel="stylesheet" type="text/css" href="/static/web/main.css?v={{.CMS.LastUpdate}}" />
+    <script src="/static/web/main.min.js?v={{.CMS.LastUpdate}}"></script>
+
+    <title>{{$title}}</title>
+</head>
+<body>

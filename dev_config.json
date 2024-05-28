@@ -33,10 +33,7 @@
         "out": "static/web/main.min.js"
     },
     "analytics": {
-        "provider": "",
-        "client_id": "",
-        "client_secret": "",
-        "subnets": null,
-        "header": null
+        "provider": "pirsch",
+        "client_secret": ""
     }
 }
