@@ -1,0 +1,42 @@
+{
+    "dev": true,
+    "server": {
+        "host": "localhost",
+        "port": 8080,
+        "shutdown_time": 30,
+        "write_timeout": 5,
+        "read_timeout": 5,
+        "hostname": "marvinblum.de",
+        "secure_cookies": false,
+        "cookie_domain_name": "marvinblum.de"
+    },
+    "content": {
+        "provider": "git",
+        "update_seconds": 30,
+        "repository": "https://github.com/Kugelschieber/marvinblum.git"
+    },
+    "cors": {
+        "origins": "*",
+        "loglevel": "info"
+    },
+    "sass": {
+        "entrypoint": "main.scss",
+        "dir": "assets/scss",
+        "watch": true,
+        "out": "static/web/main.css",
+        "out_source_map": "static/web/main.css.map"
+    },
+    "js": {
+        "entrypoint": "main.js",
+        "dir": "assets/js",
+        "watch": true,
+        "out": "static/web/main.min.js"
+    },
+    "analytics": {
+        "provider": "",
+        "client_id": "",
+        "client_secret": "",
+        "subnets": null,
+        "header": null
+    }
+}
