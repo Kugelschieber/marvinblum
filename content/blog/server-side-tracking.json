@@ -1,0 +1,28 @@
+{
+    "path": {
+        "en": "/blog/server-side-tracking-without-cookies-in-go-OxdzmGZ1Bl"
+    },
+    "sitemap": {
+        "priority": "0.6"
+    },
+    "content": {
+        "content": [
+            {"ref": "head"},
+            {"ref": "nav"},
+            {
+                "tpl": "text",
+                "data": {
+                    "size": "h1",
+                    "markdown": "/static/blog/server-side-tracking.md"
+                },
+                "copy": {
+                    "en": {
+                        "headline": "Server-Side Tracking Without Cookies In Go"
+                    }
+                }
+            },
+            {"ref": "footer"},
+            {"ref": "end"}
+        ]
+    }
+}

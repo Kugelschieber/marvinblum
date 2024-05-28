@@ -1,0 +1,28 @@
+{
+    "path": {
+        "en": "/blog/testing-database-transactions-in-go-jEaOGXravM"
+    },
+    "sitemap": {
+        "priority": "0.6"
+    },
+    "content": {
+        "content": [
+            {"ref": "head"},
+            {"ref": "nav"},
+            {
+                "tpl": "text",
+                "data": {
+                    "size": "h1",
+                    "markdown": "/static/blog/go-db-transactions.md"
+                },
+                "copy": {
+                    "en": {
+                        "headline": "Testing Database Transactions in Go"
+                    }
+                }
+            },
+            {"ref": "footer"},
+            {"ref": "end"}
+        ]
+    }
+}

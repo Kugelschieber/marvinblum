@@ -1,0 +1,28 @@
+{
+    "path": {
+        "en": "/blog/my-experience-with-vue-3-and-typescript-so-far-bZ1DQzJdjK"
+    },
+    "sitemap": {
+        "priority": "0.6"
+    },
+    "content": {
+        "content": [
+            {"ref": "head"},
+            {"ref": "nav"},
+            {
+                "tpl": "text",
+                "data": {
+                    "size": "h1",
+                    "markdown": "/static/blog/vue3.md"
+                },
+                "copy": {
+                    "en": {
+                        "headline": "My Experience With Vue 3 and Typescript So Far"
+                    }
+                }
+            },
+            {"ref": "footer"},
+            {"ref": "end"}
+        ]
+    }
+}

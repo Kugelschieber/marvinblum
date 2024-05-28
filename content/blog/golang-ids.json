@@ -1,0 +1,28 @@
+{
+    "path": {
+        "en": "/blog/golang-transforming-ids-to-a-user-friendly-representation-in-web-applications-OxdzmRZ1Bl"
+    },
+    "sitemap": {
+        "priority": "0.6"
+    },
+    "content": {
+        "content": [
+            {"ref": "head"},
+            {"ref": "nav"},
+            {
+                "tpl": "text",
+                "data": {
+                    "size": "h1",
+                    "markdown": "/static/blog/golang-ids.md"
+                },
+                "copy": {
+                    "en": {
+                        "headline": "Golang: Transforming IDs to a User-Friendly Representation in Web Applications"
+                    }
+                }
+            },
+            {"ref": "footer"},
+            {"ref": "end"}
+        ]
+    }
+}

@@ -1,0 +1,28 @@
+{
+    "path": {
+        "en": "/blog/a-quick-update-on-pirsch-me1VJzz1Xy"
+    },
+    "sitemap": {
+        "priority": "0.6"
+    },
+    "content": {
+        "content": [
+            {"ref": "head"},
+            {"ref": "nav"},
+            {
+                "tpl": "text",
+                "data": {
+                    "size": "h1",
+                    "markdown": "/static/blog/pirsch-update.md"
+                },
+                "copy": {
+                    "en": {
+                        "headline": "A Quick Update on Pirsch"
+                    }
+                }
+            },
+            {"ref": "footer"},
+            {"ref": "end"}
+        ]
+    }
+}

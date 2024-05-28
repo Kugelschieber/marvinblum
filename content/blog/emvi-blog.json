@@ -1,0 +1,28 @@
+{
+    "path": {
+        "en": "/blog/how-i-built-my-website-using-emvi-as-a-headless-cms-RGaqOqK18w"
+    },
+    "sitemap": {
+        "priority": "0.6"
+    },
+    "content": {
+        "content": [
+            {"ref": "head"},
+            {"ref": "nav"},
+            {
+                "tpl": "text",
+                "data": {
+                    "size": "h1",
+                    "markdown": "/static/blog/emvi-blog.md"
+                },
+                "copy": {
+                    "en": {
+                        "headline": "How I Built My Website Using Emvi as a Headless CMS"
+                    }
+                }
+            },
+            {"ref": "footer"},
+            {"ref": "end"}
+        ]
+    }
+}

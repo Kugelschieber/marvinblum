@@ -1,0 +1,28 @@
+{
+    "path": {
+        "en": "/blog/wildcard-ssl-certificates-on-kubernetes-using-acme-dns-0odQzebaLO"
+    },
+    "sitemap": {
+        "priority": "0.6"
+    },
+    "content": {
+        "content": [
+            {"ref": "head"},
+            {"ref": "nav"},
+            {
+                "tpl": "text",
+                "data": {
+                    "size": "h1",
+                    "markdown": "/static/blog/wildcard-ssl-certificates.md"
+                },
+                "copy": {
+                    "en": {
+                        "headline": "Wildcard SSL Certificates on Kubernetes Using ACME DNS"
+                    }
+                }
+            },
+            {"ref": "footer"},
+            {"ref": "end"}
+        ]
+    }
+}
