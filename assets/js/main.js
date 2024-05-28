@@ -1,1 +1,1 @@
-console.log("Hello from Shifu!");
+console.log("Hi!");

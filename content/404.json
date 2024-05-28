@@ -1,23 +1,23 @@
 {
     "path": {
-        "en": "/"
+        "en": "/404"
     },
     "sitemap": {
-        "priority": "1.0"
+        "priority": "0.1"
     },
     "content": {
         "content": [
             {"ref": "head"},
             {"ref": "nav"},
             {
-                "tpl": "intro"
-            },
-            {
                 "tpl": "text",
+                "data": {
+                    "size": "h1"
+                },
                 "copy": {
                     "en": {
-                        "headline": "TODO",
-                        "text": "<ul><li>About</li><li>Skills</li><li>Projects</li><li>Work Experience</li><li>Hire me!</li></ul>"
+                        "headline": "404",
+                        "text": "<p>Whoops — this page does not exist.</p>"
                     }
                 }
             },

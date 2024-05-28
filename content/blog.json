@@ -1,0 +1,16 @@
+{
+    "path": {
+        "en": "/blog"
+    },
+    "sitemap": {
+        "priority": "0.9"
+    },
+    "content": {
+        "content": [
+            {"ref": "head"},
+            {"ref": "nav"},
+            {"ref": "footer"},
+            {"ref": "end"}
+        ]
+    }
+}

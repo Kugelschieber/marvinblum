@@ -1,0 +1,13 @@
+{{$size := get .Content "size"}}
+
+<section>
+    {{if $size}}
+        {{html (fmt "<%s>" $size)}}
+            {{copy .Page .Content "headline"}}
+        {{html (fmt "</%s>" $size)}}
+    {{else}}
+        <h2>{{copy .Page .Content "headline"}}</h2>
+    {{end}}
+
+    {{html (copy .Page .Content "text")}}
+</section>
