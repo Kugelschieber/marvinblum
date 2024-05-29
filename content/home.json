@@ -14,10 +14,25 @@
             },
             {
                 "tpl": "text",
+                "data": {
+                    "size": "h2"
+                },
                 "copy": {
                     "en": {
-                        "headline": "TODO",
-                        "text": "<ul><li>About</li><li>Skills</li><li>Projects</li><li>Work Experience</li><li>Hire me!</li></ul>"
+                        "headline": "About",
+                        "text": "<p>I started programming in PHP when I was about 11 years old. Later, I studied computer science, started my own company, and worked for a variety of clients developing websites, custom software, and distributed systems. My current project, Pirsch Analytics (a privacy-friendly web analytics tool), sits at ~$100k ARR.</p><p>My skill set includes:</p><ul><li>Go (Golang), JavaScript, PHP, SQL, and a few others I don't use regularly</li><li>HTML, CSS, Sass, VueJs, Node, and other web technologies</li><li>Linux (local and on servers), Docker, Kubernetes, HashiCorp Nomad, Hetzner, and other cloud technologies</li></ul><p>If you're interested, I'm available for hire (use the <strong>Contact me</strong> button above or take a look at our <a href='https://emvi.com' target='_blank'>company website</a>).</p>"
+                    }
+                }
+            },
+            {
+                "tpl": "text",
+                "data": {
+                    "size": "h2"
+                },
+                "copy": {
+                    "en": {
+                        "headline": "Work Experience",
+                        "text": "<ul><li>Pirsch Co-founder of a privacy-preserving, open-source web analytics SaaS</li><li>Emvi Co-founder</li><li>skalar marketing as full stack developer</li><li>arvato systems GmbH as a Java developer</li><li>Some freelance work</li></ul>"
                     }
                 }
             },
