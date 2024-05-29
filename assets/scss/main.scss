@@ -12,6 +12,10 @@ $highlight: #c0d9f0;
 	font-size: 18px;
 	line-height: 2;
 	color: $textColor;
+
+	@media screen and (max-width: 890px) {
+		font-size: 16px;
+	}
 }
 
 body {
@@ -26,12 +30,26 @@ h1, h2 {
 
 	a {
 		font-size: 32px;
+
+		@media screen and (max-width: 890px) {
+			font-size: 26px;
+		}
+	}
+
+	@media screen and (max-width: 890px) {
+		font-size: 26px;
+		margin: 0 0 20px 0;
 	}
 }
 
 h2 {
 	margin: 40px 0;
 	font-size: 26px;
+
+	@media screen and (max-width: 890px) {
+		font-size: 20px;
+		margin: 20px 0;
+	}
 }
 
 a {
@@ -124,6 +142,14 @@ nav {
 					}
 				}
 			}
+
+			@media screen and (max-width: 890px) {
+				gap: 10px;
+			}
+
+			@media screen and (max-width: 580px) {
+				flex-direction: column;
+			}
 		}
 
 		.contact {
@@ -138,7 +164,30 @@ nav {
 				background: $textColor;
 				color: #fff;
 			}
+
+			@media screen and (max-width: 890px) {
+				padding: 4px 8px;
+			}
 		}
+
+		@media screen and (max-width: 890px) {
+			padding: 40px;
+		}
+
+		@media screen and (max-width: 420px) {
+			padding: 20px 0;
+			flex-direction: column;
+			gap: 10px;
+			align-items: flex-start;
+		}
+	}
+
+	@media screen and (max-width: 890px) {
+		padding: 0;
+	}
+
+	@media screen and (max-width: 420px) {
+		padding: 20px;
 	}
 }
 
@@ -146,6 +195,14 @@ section {
 	max-width: 1080px;
 	margin: 80px auto 0 auto;
 	padding: 0 40px;
+
+	@media screen and (max-width: 890px) {
+		margin: 40px auto 0 auto;
+	}
+
+	@media screen and (max-width: 420px) {
+		padding: 0 20px;
+	}
 }
 
 footer {
@@ -186,7 +243,29 @@ footer {
 			max-height: 196px;
 			aspect-ratio: 1;
 			border-radius: $borderRadius;
+
+			@media screen and (max-width: 890px) {
+				max-width: 142px;
+				max-height: 142px;
+			}
+
+			@media screen and (max-width: 600px) {
+				margin: 0;
+			}
 		}
+
+		@media screen and (max-width: 600px) {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+	}
+
+	@media screen and (max-width: 600px) {
+		padding: 0 40px 40px 40px;
+	}
+
+	@media screen and (max-width: 420px) {
+		padding: 0 20px 20px 20px;
 	}
 }
 
@@ -208,6 +287,10 @@ footer {
 
 		&:hover {
 			color: $linkColor;
+		}
+
+		@media screen and (max-width: 890px) {
+			font-size: 20px;
 		}
 	}
 }
