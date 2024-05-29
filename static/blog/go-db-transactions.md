@@ -36,7 +36,7 @@ I hope this helps you to prevent some nasty deadlock bugs. I found quite a few i
 
 * * *
 
-Would you like to see more? Read my blog articles on [Emvi](https://emvi.com/blog), my project page on [GitHub](https://github.com/Kugelschieber) or send me a [mail](mailto:marvin@marvinblum.de).
+Would you like to see more? Read my blog articles on [Emvi](https://emvi.com/blog?ref=marvinblum.de), my project page on [GitHub](https://github.com/Kugelschieber) or send me a [mail](mailto:marvin@marvinblum.de).
 
 This page uses [concrete](https://concrete.style/) for styling. Check it out!
 

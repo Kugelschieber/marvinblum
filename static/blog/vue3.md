@@ -1,13 +1,13 @@
 **Published on 22. October 2020**
 
-I recently started working on the user interface for [Pirsch](https://pirsch.io/) and was very happy to hear that Vue 3 [has been officially released](https://news.vuejs.org/issues/186) and marked production-ready. While most of the other core libraries, like vue-router and vuex, are still in beta, I didn't want to build upon Vue 2. Don't get me wrong, Vue 2 is a great framework and stable, but I wasn't satisfied with my approach to building frontends anymore.
+I recently started working on the user interface for [Pirsch](https://pirsch.io/?ref=marvinblum.de) and was very happy to hear that Vue 3 [has been officially released](https://news.vuejs.org/issues/186) and marked production-ready. While most of the other core libraries, like vue-router and vuex, are still in beta, I didn't want to build upon Vue 2. Don't get me wrong, Vue 2 is a great framework and stable, but I wasn't satisfied with my approach to building frontends anymore.
 
 This article is about the transition to a new project setup, my first steps in Vue 3, and the experiences I made using it together with TypeScript. I will provide code samples and highlight a few features I found useful and refreshing.
 
 Some Background
 ---------------
 
-I started learning Vue back when they made the transition from version 1 to 2 and I quickly built my own setup, ignoring the default way of setting up a project through the vue-cli. This time, however, I wanted to just use what's there and not wrap my head around setting up stuff like webpack. Additionally, I wanted to try out TypeScript, something I have shied away from for a long time, mostly because I believed it would add an additional layer of abstraction on top of vanilla JavaScript, which seemed unnecessary to me. And as we recently started developing a new product called [Pirsch](https://pirsch.io/), which has a fairly simple frontend, I took the opportunity to try out something new. As I'm a beginner with TypeScript, please let me know if you find anything odd or plain wrong.
+I started learning Vue back when they made the transition from version 1 to 2 and I quickly built my own setup, ignoring the default way of setting up a project through the vue-cli. This time, however, I wanted to just use what's there and not wrap my head around setting up stuff like webpack. Additionally, I wanted to try out TypeScript, something I have shied away from for a long time, mostly because I believed it would add an additional layer of abstraction on top of vanilla JavaScript, which seemed unnecessary to me. And as we recently started developing a new product called [Pirsch](https://pirsch.io/?ref=marvinblum.de), which has a fairly simple frontend, I took the opportunity to try out something new. As I'm a beginner with TypeScript, please let me know if you find anything odd or plain wrong.
 
 Setup
 -----

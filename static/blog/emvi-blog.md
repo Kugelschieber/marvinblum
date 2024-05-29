@@ -87,7 +87,7 @@ var funcMap = template.FuncMap{
 Blog
 ----
 
-[Emvi](https://emvi.com/) offers an API which allows anyone to use it as a headless CMS. The main advantage of it is, that I can use its editor to write my blog articles, upload images/files and don't need to worry about hosting my own CMS. Apart from that I'm using Emvi for note taking and documentation anyways, so I can stay on the same platform.
+[Emvi](https://emvi.com?ref=marvinblum.de) offers an API which allows anyone to use it as a headless CMS. The main advantage of it is, that I can use its editor to write my blog articles, upload images/files and don't need to worry about hosting my own CMS. Apart from that I'm using Emvi for note taking and documentation anyways, so I can stay on the same platform.
 
 To read articles, I make use of the [Go client library](https://github.com/emvi/api-go). It isn't complete yet, as Emvi is still in beta, but provides everything required to build a blog. On top of it I build my own type to cache articles and files and sort them into maps, which are rendered on my page later. You could just use the client to do all of that without caching, but to reduce latency and serve articles in case Emvi goes down for some reason, I thought that would be a good idea.
 
