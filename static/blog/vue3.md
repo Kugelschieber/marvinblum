@@ -14,13 +14,13 @@ Setup
 
 The best way to set up a new Vue 3 project is by installing and using the [vue-cli](https://cli.vuejs.org/).
 
-![https://api.emvi.com/api/v1/content/bFvNeJItGTLLFoTNjriJ.png](https://marvinblum.de/static/blog/bZ1DQzJdjK/bFvNeJItGTLLFoTNjriJ.png)
+![Setup](/static/blog/vue3/setup.png)
 
 Run `vue create <name>` to set up a new project.
 
 This command will generate a new project inside the `test-app` directory and create the basic structure. Note that you will have to select Vue 3 and TypeScript from the `Manually select features` option at the beginning, as it is still marked as experimental.
 
-![https://api.emvi.com/api/v1/content/7hjDa1NJXZ8nBUIhVq38.png](https://marvinblum.de/static/blog/bZ1DQzJdjK/7hjDa1NJXZ8nBUIhVq38.png)
+![Structure](/static/blog/vue3/structure.png)
 
 Out-of-the-box project structure of a new Vue 3 project.
 
@@ -28,13 +28,13 @@ Nothing surprising so far, but what really astonished me was how well everything
 
 The only changes I made were removing the `assets` folder and adding a command to the `package.json` to rebuild when something changed (build is still used for the production release).
 
-![https://api.emvi.com/api/v1/content/A9Qi6HaL2RiOq5PjopiG.png](https://marvinblum.de/static/blog/bZ1DQzJdjK/A9Qi6HaL2RiOq5PjopiG.png)
+![Scripts](/static/blog/vue3/scripts.png)
 
 A very lean `package.json`.
 
 I use to embed my apps inside a custom Go server, to have control over configuration, headers, how files are served, easier deployment, and to add some functionality of course. By default, the `build` and `watch` commands will put the compiled files into the `dist` folder, present inside the root directory. The app itself is a subdirectory of the Go server.
 
-![https://api.emvi.com/api/v1/content/kG2XljOM5Ej5DK0L5G4H.png](https://marvinblum.de/static/blog/bZ1DQzJdjK/kG2XljOM5Ej5DK0L5G4H.png)
+![UI](/static/blog/vue3/ui.png)
 
 Before, I just served the whole UI directory, but this time I had to select the directories under `dist` to make it work.
 
@@ -60,7 +60,7 @@ You might have heard about the Composition API already. It's a new way to define
 
 I fell in love with it when I had to implement multiple dropdowns. Here is an example from Pirsch, when I built the menu and had to add four dropdowns, which are functionality-wise all the same.
 
-![https://api.emvi.com/api/v1/content/TOAAT58QxRrVJHQOJ55t.jpeg](https://marvinblum.de/static/blog/bZ1DQzJdjK/TOAAT58QxRrVJHQOJ55t.jpeg)
+![Composition](/static/blog/vue3/composition.jpeg)
 
 An early version of Pirsch's menu.
 
@@ -213,7 +213,7 @@ Generics With Typescript
 
 Another moment I felt pretty good about my choice using TypeScript, was when I had to implement lists. Lists are often used to display data that would otherwise be in a table. They usually consist of "cards" in my apps, showing what it is and some additional fields and buttons to edit or remove them from the list.
 
-![https://api.emvi.com/api/v1/content/dfW7HEb088pUlq6ZA9vp.png](https://marvinblum.de/static/blog/bZ1DQzJdjK/dfW7HEb088pUlq6ZA9vp.png)
+![Access](/static/blog/vue3/access.png)
 
 I know this doesn't look very nice at the moment...
 

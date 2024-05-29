@@ -10,7 +10,7 @@ $highlight: #c0d9f0;
 	box-sizing: border-box;
 	font-family: "Open Sans", sans-serif;
 	font-size: 18px;
-	line-height: 1.5;
+	line-height: 2;
 	color: $textColor;
 }
 
@@ -75,6 +75,14 @@ hr {
 	height: 2px;
 	background: $lightGray;
 	border-width: 0;
+}
+
+blockquote {
+	margin: 40px 0 40px 40px;
+	padding: 10px 20px;
+	border-width: 0 0 0 2px;
+	border-style: solid;
+	border-color: $highlight;
 }
 
 nav {
@@ -178,6 +186,28 @@ footer {
 			max-height: 196px;
 			aspect-ratio: 1;
 			border-radius: $borderRadius;
+		}
+	}
+}
+
+.blog-entry {
+	margin-bottom: 0;
+
+	p {
+		margin: 0;
+		color: $linkColor;
+	}
+
+	h2 {
+		margin: 0;
+	}
+
+	a {
+		color: $textColor;
+		font-size: 26px;
+
+		&:hover {
+			color: $linkColor;
 		}
 	}
 }

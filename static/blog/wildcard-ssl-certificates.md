@@ -2,7 +2,7 @@
 
 > _This post was originally published on Medium a while ago. I just added it to my blog for completeness._
 
-![https://api.emvi.com/api/v1/content/NrnkLU0381vIVXCWKMJJ.png](https://marvinblum.de/static/blog/0odQzebaLO/NrnkLU0381vIVXCWKMJJ.png)
+![Comic](/static/blog/wildcardssl/comic.png)
 
 Image by [CommitStrip](http://www.commitstrip.com/en/2016/06/13/the-end-of-an-expensive-era/).
 

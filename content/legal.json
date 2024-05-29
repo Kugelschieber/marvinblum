@@ -9,6 +9,35 @@
         "content": [
             {"ref": "head"},
             {"ref": "nav"},
+            {
+                "tpl": "text",
+                "data": {
+                    "size": "h1"
+                },
+                "copy": {
+                    "en": {
+                        "headline": "Legal"
+                    }
+                }
+            },
+            {
+                "tpl": "text",
+                "copy": {
+                    "en": {
+                        "headline": "According to §5 TMG",
+                        "text": "<p>Marvin Blum<br />Schulbusch 29<br />33378 Rheda-Wiedenbrück, Germany<br />marvin@marvinblum.de</p>"
+                    }
+                }
+            },
+            {
+                "tpl": "text",
+                "copy": {
+                    "en": {
+                        "headline": "Cookie Policy",
+                        "text": "<p>This page does not use cookies.</p>"
+                    }
+                }
+            },
             {"ref": "footer"},
             {"ref": "end"}
         ]

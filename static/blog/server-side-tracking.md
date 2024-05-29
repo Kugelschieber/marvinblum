@@ -20,14 +20,14 @@ Pirsch is German and refers to a special kind of hunt: _the hunter carefully an
 
 I found this quite fitting for a tracking library that cannot be blocked by the visitor. Even though it sounds a little sneaky. Here is the Gopher for it created by [Daniel](https://github.com/Motorschpocht).
 
-![https://api.emvi.com/api/v1/content/0wV4YBIYaCm9JiteSaa3.svg](https://marvinblum.de/static/blog/OxdzmGZ1Bl/0wV4YBIYaCm9JiteSaa3.svg)
+![Gopher](/static/blog/servertracking/gopher.svg)
 
 How Does It Work?
 -----------------
 
 I will go over each step in more detail later, but here is a high-level overview of how Pirsch tracks visitors.
 
-![https://api.emvi.com/api/v1/content/xaISIoTt8WAsFYWchuX8.svg](https://marvinblum.de/static/blog/OxdzmGZ1Bl/xaISIoTt8WAsFYWchuX8.svg)
+![Network Flow](/static/blog/servertracking/network.svg)
 
 Once someone visits your website, the HTTP handler calls Pirsch to store a new hit and goes on with whatever it intends to do. Pirsch will do its best to filter out bots, calculate a fingerprint, and stores the page hit. You can analyze the data and generate statistics from it later.
 
@@ -89,7 +89,7 @@ Pirsch provides an _Analyzer_ that can be used to extract some basic statistics:
 
 Most of these functions accept a filter to specify a time frame. The data can then be plotted like on my [tracking page](https://marvinblum.de/tracking).
 
-![https://api.emvi.com/api/v1/content/QOeMcMKi8yS2p4WB2Xlu.png](https://marvinblum.de/static/blog/OxdzmGZ1Bl/QOeMcMKi8yS2p4WB2Xlu.png)
+![Charts](/static/blog/servertracking/charts.png)
 
 To reduce the amount of data that needs to be processed the hits get aggregated each night and hits are cleaned up afterward.
 

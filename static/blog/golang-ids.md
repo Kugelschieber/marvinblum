@@ -2,7 +2,7 @@
 
 > _This post was originally published on Medium a while ago. I just added it to my blog for completeness._
 
-![https://api.emvi.com/api/v1/content/AIVEMz3CkZoRI7wunlVp.png](https://marvinblum.de/static/blog/OxdzmRZ1Bl/AIVEMz3CkZoRI7wunlVp.png)
+![Gopher](/static/blog/hideid/gopher.png)
 
 Most Golang web applications use persistency in some way or another. Usually, the connection between your application and the persistent layer is a technical identification value (ID), a number in most cases. IDs are useful to identify, connect and distinguish data records. Here is a typical example of a database model represented as a struct within Golang applications:
 
@@ -185,17 +185,3 @@ type Customer struct {
 
 
 And that’s it! If you want to know more about how to implement this or just use it right away, you can visit the GitHub project, which implements all of the functionality I’ve shown above. It uses HashIds, which I’ve mentioned earlier, to transform the IDs to a nice and short hash representation.
-
-[
-
-![](https://avatars0.githubusercontent.com/u/33937375?s=400&v=4)
-
-emvi/hide
-
-ID type with marshalling to/from hash to prevent sending IDs to clients. - emvi/hide
-
-https://github.com/emvi/hide
-
-
-
-](https://github.com/emvi/hide)

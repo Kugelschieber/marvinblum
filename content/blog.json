@@ -9,6 +9,87 @@
         "content": [
             {"ref": "head"},
             {"ref": "nav"},
+            {
+                "tpl": "text",
+                "data": {
+                    "size": "h1"
+                },
+                "copy": {
+                    "en": {
+                        "headline": "Blog"
+                    }
+                }
+            },
+            {
+                "tpl": "blog_entry",
+                "copy": {
+                    "en": {
+                        "date": "22. October 2020",
+                        "headline": "My Experience With Vue 3 and Typescript So Far",
+                        "link": "/blog/my-experience-with-vue-3-and-typescript-so-far-bZ1DQzJdjK"
+                    }
+                }
+            },
+            {
+                "tpl": "blog_entry",
+                "copy": {
+                    "en": {
+                        "date": "28. August 2020",
+                        "headline": "Testing Database Transactions in Go",
+                        "link": "/blog/testing-database-transactions-in-go-jEaOGXravM"
+                    }
+                }
+            },
+            {
+                "tpl": "blog_entry",
+                "copy": {
+                    "en": {
+                        "date": "7. July 2020",
+                        "headline": "Wildcard SSL Certificates on Kubernetes Using ACME DNS",
+                        "link": "/blog/wildcard-ssl-certificates-on-kubernetes-using-acme-dns-0odQzebaLO"
+                    }
+                }
+            },
+            {
+                "tpl": "blog_entry",
+                "copy": {
+                    "en": {
+                        "date": "7. July 2020",
+                        "headline": "Golang: Transforming IDs to a User-Friendly Representation in Web Applications",
+                        "link": "/blog/golang-transforming-ids-to-a-user-friendly-representation-in-web-applications-OxdzmRZ1Bl"
+                    }
+                }
+            },
+            {
+                "tpl": "blog_entry",
+                "copy": {
+                    "en": {
+                        "date": "3. July 2020",
+                        "headline": "A Quick Update on Pirsch",
+                        "link": "/blog/a-quick-update-on-pirsch-me1VJzz1Xy"
+                    }
+                }
+            },
+            {
+                "tpl": "blog_entry",
+                "copy": {
+                    "en": {
+                        "date": "22. June 2020",
+                        "headline": "Server-Side Tracking Without Cookies In Go",
+                        "link": "/blog/server-side-tracking-without-cookies-in-go-OxdzmGZ1Bl"
+                    }
+                }
+            },
+            {
+                "tpl": "blog_entry",
+                "copy": {
+                    "en": {
+                        "date": "14. June 2020",
+                        "headline": "How I Built My Website Using Emvi as a Headless CMS",
+                        "link": "/blog/how-i-built-my-website-using-emvi-as-a-headless-cms-RGaqOqK18w"
+                    }
+                }
+            },
             {"ref": "footer"},
             {"ref": "end"}
         ]
