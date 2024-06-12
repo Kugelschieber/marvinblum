@@ -156,9 +156,10 @@ nav {
 			display: inline-block;
 			padding: 8px 16px;
 			border-radius: $borderRadius;
-			border: 2px solid $textColor;
+			border: 3px solid $textColor;
 			color: $textColor;
 			transition: all 0.3s;
+			font-weight: 600;
 
 			&:hover {
 				background: $textColor;
