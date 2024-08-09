@@ -119,6 +119,8 @@ nav {
 			gap: 20px;
 			margin: 0;
 			padding: 0;
+			overflow: hidden;
+			transition: all .5s;
 
 			li {
 				list-style: none;
@@ -149,6 +151,22 @@ nav {
 
 			@media screen and (max-width: 580px) {
 				flex-direction: column;
+				max-height: 0;
+			}
+		}
+
+		.open {
+			max-height: 220px;
+		}
+
+		.burger {
+			display: none;
+			width: 46px;
+			height: 46px;
+			cursor: pointer;
+
+			@media screen and (max-width: 580px) {
+				display: inline;
 			}
 		}
 
@@ -186,7 +204,7 @@ nav {
 	}
 
 	@media screen and (max-width: 420px) {
-		padding: 20px;
+		padding: 0 20px 20px 20px;
 	}
 }
 
