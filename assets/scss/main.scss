@@ -161,8 +161,8 @@ nav {
 
 		.burger {
 			display: none;
-			width: 46px;
-			height: 46px;
+			width: 42px;
+			height: 42px;
 			cursor: pointer;
 
 			@media screen and (max-width: 580px) {
@@ -204,7 +204,7 @@ nav {
 	}
 
 	@media screen and (max-width: 420px) {
-		padding: 0 20px 20px 20px;
+		padding: 0 20px;
 	}
 }
 
