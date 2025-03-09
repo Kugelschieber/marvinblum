@@ -10,8 +10,7 @@
         "secure_cookies": false,
         "cookie_domain_name": "marvinblum.de"
     },
-    "content": {
-        "provider": "git",
+    "git": {
         "update_seconds": 30,
         "repository": "https://github.com/Kugelschieber/marvinblum.git"
     },
