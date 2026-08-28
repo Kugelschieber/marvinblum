@@ -1,264 +1,360 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <title>Expense Splitter</title>
-    <link rel="stylesheet" type="text/css" href="/static/web/main.css" />
-</head>
-<body>
-    <h1>Expense Splitter</h1>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Expense Splitter</title>
+        <link rel="stylesheet" type="text/css" href="/static/web/main.css" />
+    </head>
+    <body>
+        <h1>Expense Splitter</h1>
+        <h2>1. Mitglieder</h2>
+        <div id="member-list"></div>
+        <input type="text" id="member-name" placeholder="Name eingeben" />
+        <button onclick="addMember()">Mitglied hinzufügen</button>
 
-    <hr>
+        <hr />
 
-    <h2>1. Mitglieder</h2>
-    <div id="member-list"></div>
-    <input type="text" id="member-name" placeholder="Name eingeben">
-    <button onclick="addMember()">Mitglied hinzufügen</button>
+        <h2>2. Neue Ausgabe hinzufügen</h2>
+        <table id="expense-form-table" border="1" cellpadding="4">
+            <tr>
+                <td>Beschreibung:</td>
+                <td>
+                    <input
+                        type="text"
+                        id="expense-desc"
+                        placeholder="z.B. Abendessen"
+                    />
+                </td>
+            </tr>
+            <tr>
+                <td>Betrag:</td>
+                <td>
+                    <input
+                        type="number"
+                        id="expense-amount"
+                        step="0.01"
+                        placeholder="0.00"
+                    />
+                </td>
+            </tr>
+            <tr>
+                <td>Bezahlt von:</td>
+                <td><select id="expense-payer"></select></td>
+            </tr>
+            <tr>
+                <td>Aufteilungsart:</td>
+                <td>
+                    <select id="split-type" onchange="renderSplitInputs()">
+                        <option value="equal">
+                            Gleichmäßig unter Ausgewählten
+                        </option>
+                        <option value="exact">Exakte Beträge pro Person</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Aufgeteilt zwischen:</td>
+                <td id="split-inputs"></td>
+            </tr>
+        </table>
+        <button onclick="addExpense()">Ausgabe speichern</button>
+        <div id="expense-error" style="color: red"></div>
 
-    <hr>
+        <hr />
 
-    <h2>2. Neue Ausgabe hinzufügen</h2>
-    <table id="expense-form-table" border="1" cellpadding="4">
-    <tr>
-        <td>Beschreibung:</td>
-        <td><input type="text" id="expense-desc" placeholder="z.B. Abendessen"></td>
-    </tr>
-    <tr>
-        <td>Betrag:</td>
-        <td><input type="number" id="expense-amount" step="0.01" placeholder="0.00"></td>
-    </tr>
-    <tr>
-        <td>Bezahlt von:</td>
-        <td><select id="expense-payer"></select></td>
-    </tr>
-    <tr>
-        <td>Aufteilungsart:</td>
-        <td>
-        <select id="split-type" onchange="renderSplitInputs()">
-            <option value="equal">Gleichmäßig unter Ausgewählten</option>
-            <option value="exact">Exakte Beträge pro Person</option>
-        </select>
-        </td>
-    </tr>
-    <tr>
-        <td>Aufgeteilt zwischen:</td>
-        <td id="split-inputs"></td>
-    </tr>
-    </table>
-    <button onclick="addExpense()">Ausgabe speichern</button>
-    <div id="expense-error" style="color:red;"></div>
+        <h2>3. Alle Ausgaben</h2>
+        <table id="expense-table" border="1" cellpadding="4">
+            <thead>
+                <tr>
+                    <th>Datum</th>
+                    <th>Beschreibung</th>
+                    <th>Betrag</th>
+                    <th>Bezahlt von</th>
+                    <th>Aufteilung</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="expense-tbody"></tbody>
+        </table>
 
-    <hr>
+        <hr />
 
-    <h2>3. Alle Ausgaben</h2>
-    <table id="expense-table" border="1" cellpadding="4">
-    <thead>
-        <tr>
-        <th>Datum</th>
-        <th>Beschreibung</th>
-        <th>Betrag</th>
-        <th>Bezahlt von</th>
-        <th>Aufteilung</th>
-        <th></th>
-        </tr>
-    </thead>
-    <tbody id="expense-tbody"></tbody>
-    </table>
+        <h2>4. Salden (wer hat wie viel zu bekommen / zu zahlen)</h2>
+        <div id="balances"></div>
 
-    <hr>
+        <hr />
 
-    <h2>4. Salden (wer hat wie viel zu bekommen / zu zahlen)</h2>
-    <div id="balances"></div>
+        <h2>5. Vereinfachte Rückzahlungen (wer zahlt wem)</h2>
+        <div id="settlements"></div>
 
-    <hr>
+        <script>
+            // ---- Datenmodell (wird im Browser via localStorage gespeichert) ----
+            const STORAGE_KEY = "expense-splitter-data";
 
-    <h2>5. Vereinfachte Rückzahlungen (wer zahlt wem)</h2>
-    <div id="settlements"></div>
+            let members = []; // ["Anna", "Ben", ...]
+            let expenses = []; // {id, desc, amount, payer, shares: {name: betrag}}
+            let nextExpenseId = 1;
 
-    <script>
-    // ---- Datenmodell (nur im Speicher, kein localStorage) ----
-    let members = [];      // ["Anna", "Ben", ...]
-    let expenses = [];      // {id, desc, amount, payer, shares: {name: betrag}}
-    let nextExpenseId = 1;
+            function loadData() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    if (!raw) return;
+                    const data = JSON.parse(raw);
+                    members = data.members || [];
+                    expenses = data.expenses || [];
+                    nextExpenseId = data.nextExpenseId || 1;
+                } catch (e) {
+                    console.error("Konnte gespeicherte Daten nicht laden:", e);
+                }
+            }
 
-    // ---- Mitglieder verwalten ----
-    function addMember() {
-    const input = document.getElementById('member-name');
-    const name = input.value.trim();
-    if (!name) return;
-    if (members.includes(name)) {
-        alert('Dieses Mitglied existiert bereits.');
-        return;
-    }
-    members.push(name);
-    input.value = '';
-    renderMembers();
-    renderPayerSelect();
-    renderSplitInputs();
-    }
+            function saveData() {
+                try {
+                    localStorage.setItem(
+                        STORAGE_KEY,
+                        JSON.stringify({ members, expenses, nextExpenseId }),
+                    );
+                } catch (e) {
+                    console.error("Konnte Daten nicht speichern:", e);
+                }
+            }
 
-    function removeMember(name) {
-    const usedInExpense = expenses.some(e => e.payer === name || Object.keys(e.shares).includes(name));
-    if (usedInExpense) {
-        alert('Dieses Mitglied wird bereits in einer Ausgabe verwendet und kann nicht entfernt werden.');
-        return;
-    }
-    members = members.filter(m => m !== name);
-    renderMembers();
-    renderPayerSelect();
-    renderSplitInputs();
-    }
+            function resetData() {
+                if (!confirm("Wirklich alle gespeicherten Daten löschen?"))
+                    return;
+                members = [];
+                expenses = [];
+                nextExpenseId = 1;
+                localStorage.removeItem(STORAGE_KEY);
+                renderMembers();
+                renderPayerSelect();
+                renderSplitInputs();
+                renderExpenses();
+                renderBalances();
+            }
 
-    function renderMembers() {
-    const container = document.getElementById('member-list');
-    container.innerHTML = '';
-    if (members.length === 0) {
-        container.innerHTML = '<i>Noch keine Mitglieder hinzugefügt.</i>';
-        return;
-    }
-    const ul = document.createElement('ul');
-    members.forEach(name => {
-        const li = document.createElement('li');
-        li.textContent = name + ' ';
-        const btn = document.createElement('button');
-        btn.textContent = 'Entfernen';
-        btn.onclick = () => removeMember(name);
-        li.appendChild(btn);
-        ul.appendChild(li);
-    });
-    container.appendChild(ul);
-    }
+            // ---- Mitglieder verwalten ----
+            function addMember() {
+                const input = document.getElementById("member-name");
+                const name = input.value.trim();
+                if (!name) return;
+                if (members.includes(name)) {
+                    alert("Dieses Mitglied existiert bereits.");
+                    return;
+                }
+                members.push(name);
+                input.value = "";
+                saveData();
+                renderMembers();
+                renderPayerSelect();
+                renderSplitInputs();
+            }
 
-    function renderPayerSelect() {
-    const select = document.getElementById('expense-payer');
-    select.innerHTML = '';
-    members.forEach(name => {
-        const opt = document.createElement('option');
-        opt.value = name;
-        opt.textContent = name;
-        select.appendChild(opt);
-    });
-    }
+            function removeMember(name) {
+                const usedInExpense = expenses.some(
+                    (e) =>
+                        e.payer === name ||
+                        Object.keys(e.shares).includes(name),
+                );
+                if (usedInExpense) {
+                    alert(
+                        "Dieses Mitglied wird bereits in einer Ausgabe verwendet und kann nicht entfernt werden.",
+                    );
+                    return;
+                }
+                members = members.filter((m) => m !== name);
+                saveData();
+                renderMembers();
+                renderPayerSelect();
+                renderSplitInputs();
+            }
 
-    // ---- Aufteilungs-Eingaben ----
-    function renderSplitInputs() {
-    const container = document.getElementById('split-inputs');
-    const type = document.getElementById('split-type').value;
-    container.innerHTML = '';
+            function renderMembers() {
+                const container = document.getElementById("member-list");
+                container.innerHTML = "";
+                if (members.length === 0) {
+                    container.innerHTML =
+                        "<i>Noch keine Mitglieder hinzugefügt.</i>";
+                    return;
+                }
+                const ul = document.createElement("ul");
+                members.forEach((name) => {
+                    const li = document.createElement("li");
+                    li.textContent = name + " ";
+                    const btn = document.createElement("button");
+                    btn.textContent = "Entfernen";
+                    btn.onclick = () => removeMember(name);
+                    li.appendChild(btn);
+                    ul.appendChild(li);
+                });
+                container.appendChild(ul);
+            }
 
-    if (members.length === 0) {
-        container.innerHTML = '<i>Bitte zuerst Mitglieder hinzufügen.</i>';
-        return;
-    }
+            function renderPayerSelect() {
+                const select = document.getElementById("expense-payer");
+                select.innerHTML = "";
+                members.forEach((name) => {
+                    const opt = document.createElement("option");
+                    opt.value = name;
+                    opt.textContent = name;
+                    select.appendChild(opt);
+                });
+            }
 
-    members.forEach(name => {
-        const wrapper = document.createElement('span');
-        wrapper.style.marginRight = '10px';
+            // ---- Aufteilungs-Eingaben ----
+            function renderSplitInputs() {
+                const container = document.getElementById("split-inputs");
+                const type = document.getElementById("split-type").value;
+                container.innerHTML = "";
 
-        if (type === 'equal') {
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.checked = true;
-        checkbox.id = 'split-check-' + name;
-        wrapper.appendChild(checkbox);
-        const label = document.createElement('label');
-        label.htmlFor = checkbox.id;
-        label.textContent = ' ' + name;
-        wrapper.appendChild(label);
-        } else {
-        const label = document.createElement('label');
-        label.textContent = name + ': ';
-        wrapper.appendChild(label);
-        const input = document.createElement('input');
-        input.type = 'number';
-        input.step = '0.01';
-        input.placeholder = '0.00';
-        input.id = 'split-exact-' + name;
-        wrapper.appendChild(input);
-        }
-        container.appendChild(wrapper);
-        container.appendChild(document.createElement('br'));
-    });
-    }
+                if (members.length === 0) {
+                    container.innerHTML =
+                        "<i>Bitte zuerst Mitglieder hinzufügen.</i>";
+                    return;
+                }
 
-    // ---- Ausgabe hinzufügen ----
-    function addExpense() {
-    const errorDiv = document.getElementById('expense-error');
-    errorDiv.textContent = '';
+                members.forEach((name) => {
+                    const wrapper = document.createElement("span");
+                    wrapper.style.marginRight = "10px";
 
-    const desc = document.getElementById('expense-desc').value.trim();
-    const amount = parseFloat(document.getElementById('expense-amount').value);
-    const payer = document.getElementById('expense-payer').value;
-    const type = document.getElementById('split-type').value;
+                    if (type === "equal") {
+                        const checkbox = document.createElement("input");
+                        checkbox.type = "checkbox";
+                        checkbox.checked = true;
+                        checkbox.id = "split-check-" + name;
+                        wrapper.appendChild(checkbox);
+                        const label = document.createElement("label");
+                        label.htmlFor = checkbox.id;
+                        label.textContent = " " + name;
+                        wrapper.appendChild(label);
+                    } else {
+                        const label = document.createElement("label");
+                        label.textContent = name + ": ";
+                        wrapper.appendChild(label);
+                        const input = document.createElement("input");
+                        input.type = "number";
+                        input.step = "0.01";
+                        input.placeholder = "0.00";
+                        input.id = "split-exact-" + name;
+                        wrapper.appendChild(input);
+                    }
+                    container.appendChild(wrapper);
+                    container.appendChild(document.createElement("br"));
+                });
+            }
 
-    if (!desc) { errorDiv.textContent = 'Bitte eine Beschreibung eingeben.'; return; }
-    if (!amount || amount <= 0) { errorDiv.textContent = 'Bitte einen gültigen Betrag eingeben.'; return; }
-    if (!payer) { errorDiv.textContent = 'Bitte auswählen, wer bezahlt hat.'; return; }
-    if (members.length === 0) { errorDiv.textContent = 'Bitte zuerst Mitglieder hinzufügen.'; return; }
+            // ---- Ausgabe hinzufügen ----
+            function addExpense() {
+                const errorDiv = document.getElementById("expense-error");
+                errorDiv.textContent = "";
 
-    let shares = {};
+                const desc = document
+                    .getElementById("expense-desc")
+                    .value.trim();
+                const amount = parseFloat(
+                    document.getElementById("expense-amount").value,
+                );
+                const payer = document.getElementById("expense-payer").value;
+                const type = document.getElementById("split-type").value;
 
-    if (type === 'equal') {
-        const selected = members.filter(name => {
-        const cb = document.getElementById('split-check-' + name);
-        return cb && cb.checked;
-        });
-        if (selected.length === 0) { errorDiv.textContent = 'Bitte mindestens eine Person für die Aufteilung auswählen.'; return; }
-        const perPerson = amount / selected.length;
-        selected.forEach(name => { shares[name] = perPerson; });
-    } else {
-        let sum = 0;
-        members.forEach(name => {
-        const input = document.getElementById('split-exact-' + name);
-        const val = parseFloat(input.value);
-        if (!isNaN(val) && val > 0) {
-            shares[name] = val;
-            sum += val;
-        }
-        });
-        if (Object.keys(shares).length === 0) { errorDiv.textContent = 'Bitte mindestens einen Betrag eingeben.'; return; }
-        if (Math.abs(sum - amount) > 0.01) {
-        errorDiv.textContent = `Die Summe der Aufteilung (${sum.toFixed(2)}) entspricht nicht dem Gesamtbetrag (${amount.toFixed(2)}).`;
-        return;
-        }
-    }
+                if (!desc) {
+                    errorDiv.textContent = "Bitte eine Beschreibung eingeben.";
+                    return;
+                }
+                if (!amount || amount <= 0) {
+                    errorDiv.textContent =
+                        "Bitte einen gültigen Betrag eingeben.";
+                    return;
+                }
+                if (!payer) {
+                    errorDiv.textContent = "Bitte auswählen, wer bezahlt hat.";
+                    return;
+                }
+                if (members.length === 0) {
+                    errorDiv.textContent =
+                        "Bitte zuerst Mitglieder hinzufügen.";
+                    return;
+                }
 
-    expenses.push({
-        id: nextExpenseId++,
-        date: new Date().toLocaleDateString('de-DE'),
-        desc: desc,
-        amount: amount,
-        payer: payer,
-        shares: shares
-    });
+                let shares = {};
 
-    // Formular zurücksetzen
-    document.getElementById('expense-desc').value = '';
-    document.getElementById('expense-amount').value = '';
-    renderSplitInputs();
+                if (type === "equal") {
+                    const selected = members.filter((name) => {
+                        const cb = document.getElementById(
+                            "split-check-" + name,
+                        );
+                        return cb && cb.checked;
+                    });
+                    if (selected.length === 0) {
+                        errorDiv.textContent =
+                            "Bitte mindestens eine Person für die Aufteilung auswählen.";
+                        return;
+                    }
+                    const perPerson = amount / selected.length;
+                    selected.forEach((name) => {
+                        shares[name] = perPerson;
+                    });
+                } else {
+                    let sum = 0;
+                    members.forEach((name) => {
+                        const input = document.getElementById(
+                            "split-exact-" + name,
+                        );
+                        const val = parseFloat(input.value);
+                        if (!isNaN(val) && val > 0) {
+                            shares[name] = val;
+                            sum += val;
+                        }
+                    });
+                    if (Object.keys(shares).length === 0) {
+                        errorDiv.textContent =
+                            "Bitte mindestens einen Betrag eingeben.";
+                        return;
+                    }
+                    if (Math.abs(sum - amount) > 0.01) {
+                        errorDiv.textContent = `Die Summe der Aufteilung (${sum.toFixed(2)}) entspricht nicht dem Gesamtbetrag (${amount.toFixed(2)}).`;
+                        return;
+                    }
+                }
 
-    renderExpenses();
-    renderBalances();
-    }
+                expenses.push({
+                    id: nextExpenseId++,
+                    date: new Date().toLocaleDateString("de-DE"),
+                    desc: desc,
+                    amount: amount,
+                    payer: payer,
+                    shares: shares,
+                });
 
-    function deleteExpense(id) {
-    expenses = expenses.filter(e => e.id !== id);
-    renderExpenses();
-    renderBalances();
-    }
+                // Formular zurücksetzen
+                document.getElementById("expense-desc").value = "";
+                document.getElementById("expense-amount").value = "";
+                renderSplitInputs();
 
-    // ---- Ausgaben anzeigen ----
-    function renderExpenses() {
-    const tbody = document.getElementById('expense-tbody');
-    tbody.innerHTML = '';
-    expenses.forEach(e => {
-        const tr = document.createElement('tr');
+                saveData();
+                renderExpenses();
+                renderBalances();
+            }
 
-        const splitText = Object.entries(e.shares)
-        .map(([name, amt]) => `${name}: ${amt.toFixed(2)}`)
-        .join(', ');
+            function deleteExpense(id) {
+                expenses = expenses.filter((e) => e.id !== id);
+                saveData();
+                renderExpenses();
+                renderBalances();
+            }
 
-        tr.innerHTML = `
+            // ---- Ausgaben anzeigen ----
+            function renderExpenses() {
+                const tbody = document.getElementById("expense-tbody");
+                tbody.innerHTML = "";
+                expenses.forEach((e) => {
+                    const tr = document.createElement("tr");
+
+                    const splitText = Object.entries(e.shares)
+                        .map(([name, amt]) => `${name}: ${amt.toFixed(2)}`)
+                        .join(", ");
+
+                    tr.innerHTML = `
         <td>${e.date}</td>
         <td>${e.desc}</td>
         <td>${e.amount.toFixed(2)}</td>
@@ -266,109 +362,118 @@
         <td>${splitText}</td>
         <td><button onclick="deleteExpense(${e.id})">Löschen</button></td>
         `;
-        tbody.appendChild(tr);
-    });
-    }
+                    tbody.appendChild(tr);
+                });
+            }
 
-    // ---- Salden berechnen ----
-    function calculateBalances() {
-    const balances = {};
-    members.forEach(name => { balances[name] = 0; });
+            // ---- Salden berechnen ----
+            function calculateBalances() {
+                const balances = {};
+                members.forEach((name) => {
+                    balances[name] = 0;
+                });
 
-    expenses.forEach(e => {
-        // Zahler hat den vollen Betrag ausgelegt
-        if (balances[e.payer] === undefined) balances[e.payer] = 0;
-        balances[e.payer] += e.amount;
+                expenses.forEach((e) => {
+                    // Zahler hat den vollen Betrag ausgelegt
+                    if (balances[e.payer] === undefined) balances[e.payer] = 0;
+                    balances[e.payer] += e.amount;
 
-        // Jeder, der einen Anteil hat, schuldet diesen Anteil
-        Object.entries(e.shares).forEach(([name, amt]) => {
-        if (balances[name] === undefined) balances[name] = 0;
-        balances[name] -= amt;
-        });
-    });
+                    // Jeder, der einen Anteil hat, schuldet diesen Anteil
+                    Object.entries(e.shares).forEach(([name, amt]) => {
+                        if (balances[name] === undefined) balances[name] = 0;
+                        balances[name] -= amt;
+                    });
+                });
 
-    return balances;
-    }
+                return balances;
+            }
 
-    function renderBalances() {
-    const container = document.getElementById('balances');
-    const balances = calculateBalances();
-    container.innerHTML = '';
+            function renderBalances() {
+                const container = document.getElementById("balances");
+                const balances = calculateBalances();
+                container.innerHTML = "";
 
-    if (members.length === 0) {
-        container.innerHTML = '<i>Keine Mitglieder vorhanden.</i>';
-        renderSettlements(balances);
-        return;
-    }
+                if (members.length === 0) {
+                    container.innerHTML = "<i>Keine Mitglieder vorhanden.</i>";
+                    renderSettlements(balances);
+                    return;
+                }
 
-    const ul = document.createElement('ul');
-    members.forEach(name => {
-        const val = balances[name] || 0;
-        const li = document.createElement('li');
-        if (val > 0.005) {
-        li.textContent = `${name} bekommt ${val.toFixed(2)}`;
-        } else if (val < -0.005) {
-        li.textContent = `${name} schuldet ${Math.abs(val).toFixed(2)}`;
-        } else {
-        li.textContent = `${name} ist ausgeglichen`;
-        }
-        ul.appendChild(li);
-    });
-    container.appendChild(ul);
+                const ul = document.createElement("ul");
+                members.forEach((name) => {
+                    const val = balances[name] || 0;
+                    const li = document.createElement("li");
+                    if (val > 0.005) {
+                        li.textContent = `${name} bekommt ${val.toFixed(2)}`;
+                    } else if (val < -0.005) {
+                        li.textContent = `${name} schuldet ${Math.abs(val).toFixed(2)}`;
+                    } else {
+                        li.textContent = `${name} ist ausgeglichen`;
+                    }
+                    ul.appendChild(li);
+                });
+                container.appendChild(ul);
 
-    renderSettlements(balances);
-    }
+                renderSettlements(balances);
+            }
 
-    // ---- Schulden vereinfachen (greedy Algorithmus) ----
-    function renderSettlements(balances) {
-    const container = document.getElementById('settlements');
-    container.innerHTML = '';
+            // ---- Schulden vereinfachen (greedy Algorithmus) ----
+            function renderSettlements(balances) {
+                const container = document.getElementById("settlements");
+                container.innerHTML = "";
 
-    let debtors = [];   // schulden Geld (negativer Saldo)
-    let creditors = []; // bekommen Geld (positiver Saldo)
+                let debtors = []; // schulden Geld (negativer Saldo)
+                let creditors = []; // bekommen Geld (positiver Saldo)
 
-    Object.entries(balances).forEach(([name, val]) => {
-        if (val < -0.005) debtors.push({ name, amount: -val });
-        else if (val > 0.005) creditors.push({ name, amount: val });
-    });
+                Object.entries(balances).forEach(([name, val]) => {
+                    if (val < -0.005) debtors.push({ name, amount: -val });
+                    else if (val > 0.005) creditors.push({ name, amount: val });
+                });
 
-    const settlements = [];
-    let i = 0, j = 0;
+                const settlements = [];
+                let i = 0,
+                    j = 0;
 
-    while (i < debtors.length && j < creditors.length) {
-        const debtor = debtors[i];
-        const creditor = creditors[j];
-        const amount = Math.min(debtor.amount, creditor.amount);
+                while (i < debtors.length && j < creditors.length) {
+                    const debtor = debtors[i];
+                    const creditor = creditors[j];
+                    const amount = Math.min(debtor.amount, creditor.amount);
 
-        settlements.push({ from: debtor.name, to: creditor.name, amount });
+                    settlements.push({
+                        from: debtor.name,
+                        to: creditor.name,
+                        amount,
+                    });
 
-        debtor.amount -= amount;
-        creditor.amount -= amount;
+                    debtor.amount -= amount;
+                    creditor.amount -= amount;
 
-        if (debtor.amount < 0.005) i++;
-        if (creditor.amount < 0.005) j++;
-    }
+                    if (debtor.amount < 0.005) i++;
+                    if (creditor.amount < 0.005) j++;
+                }
 
-    if (settlements.length === 0) {
-        container.innerHTML = '<i>Keine offenen Zahlungen. Alles ausgeglichen!</i>';
-        return;
-    }
+                if (settlements.length === 0) {
+                    container.innerHTML =
+                        "<i>Keine offenen Zahlungen. Alles ausgeglichen!</i>";
+                    return;
+                }
 
-    const ul = document.createElement('ul');
-    settlements.forEach(s => {
-        const li = document.createElement('li');
-        li.textContent = `${s.from} zahlt ${s.amount.toFixed(2)} an ${s.to}`;
-        ul.appendChild(li);
-    });
-    container.appendChild(ul);
-    }
+                const ul = document.createElement("ul");
+                settlements.forEach((s) => {
+                    const li = document.createElement("li");
+                    li.textContent = `${s.from} zahlt ${s.amount.toFixed(2)} an ${s.to}`;
+                    ul.appendChild(li);
+                });
+                container.appendChild(ul);
+            }
 
-    // ---- Initiales Rendering ----
-    renderMembers();
-    renderPayerSelect();
-    renderSplitInputs();
-    renderExpenses();
-    renderBalances();
-    </script>
-</body>
+            // ---- Initiales Laden und Rendering ----
+            loadData();
+            renderMembers();
+            renderPayerSelect();
+            renderSplitInputs();
+            renderExpenses();
+            renderBalances();
+        </script>
+    </body>
 </html>
